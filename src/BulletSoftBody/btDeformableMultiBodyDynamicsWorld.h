@@ -67,7 +67,9 @@ protected:
     void updateActivationState(btScalar timeStep);
     
     void clearGravity();
-    
+
+    void serializeSoftBodies(btSerializer* serializer);
+
 public:
 	btDeformableMultiBodyDynamicsWorld(btDispatcher* dispatcher, btBroadphaseInterface* pairCache, btDeformableMultiBodyConstraintSolver* constraintSolver, btCollisionConfiguration* collisionConfiguration, btDeformableBodySolver* deformableBodySolver = 0);
 
@@ -157,6 +159,8 @@ public:
     {
         m_lineSearch = lineSearch;
     }
+
+    virtual void serialize(btSerializer* serializer);
 
 };
 

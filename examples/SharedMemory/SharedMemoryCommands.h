@@ -30,7 +30,9 @@ typedef unsigned long long int smUint64_t;
 #endif
 
 #define SHARED_MEMORY_SERVER_TEST_C
-#define MAX_DEGREE_OF_FREEDOM 128
+//#define MAX_DEGREE_OF_FREEDOM 128
+// 7 for the base (pos + quat), 2048 nodes for deformable objects
+#define MAX_DEGREE_OF_FREEDOM (7 + 2048 * 3)
 #define MAX_NUM_SENSORS 256
 #define MAX_URDF_FILENAME_LENGTH 1024
 #define MAX_SDF_FILENAME_LENGTH 1024

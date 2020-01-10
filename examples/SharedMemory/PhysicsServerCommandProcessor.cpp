@@ -41,6 +41,7 @@
 #include "../Importers/ImportObjDemo/LoadMeshFromObj.h"
 #include "../Importers/ImportSTLDemo/LoadMeshFromSTL.h"
 #include "../Extras/Serialize/BulletWorldImporter/btMultiBodyWorldImporter.h"
+#include "../Extras/Serialize/BulletWorldImporter/btDeformableMultiBodyWorldImporter.h"
 #include "BulletDynamics/Featherstone/btMultiBodyJointMotor.h"
 #include "LinearMath/btSerializer.h"
 #include "Bullet3Common/b3Logging.h"
@@ -7358,6 +7359,21 @@ bool PhysicsServerCommandProcessor::processRequestActualStateCommand(const struc
 		int totalDegreeOfFreedomQ = 7;  //pos + quaternion
 		int totalDegreeOfFreedomU = 6;  //3 linear and 3 angular DOF
 
+		// Treat the interal nodes of the deformable object in a similar way as links for multi-body.
+		// Append these extra details onto the end of the "base" state details
+		for (int i = 0; i < sb->m_nodes.size(); i++)
+		{
+			stateDetails->m_actualStateQ[totalDegreeOfFreedomQ + 0] = sb->m_nodes[i].m_x[0];
+			stateDetails->m_actualStateQ[totalDegreeOfFreedomQ + 1] = sb->m_nodes[i].m_x[1];
+			stateDetails->m_actualStateQ[totalDegreeOfFreedomQ + 2] = sb->m_nodes[i].m_x[2];
+
+			stateDetails->m_actualStateQdot[totalDegreeOfFreedomQ + 0] = sb->m_nodes[i].m_x[0];
+			stateDetails->m_actualStateQdot[totalDegreeOfFreedomQ + 1] = sb->m_nodes[i].m_v[1];
+			stateDetails->m_actualStateQdot[totalDegreeOfFreedomQ + 2] = sb->m_nodes[i].m_v[2];
+			totalDegreeOfFreedomQ += 3;
+			totalDegreeOfFreedomU += 3;
+		}
+
 		serverCmd.m_sendActualStateArgs.m_numDegreeOfFreedomQ = totalDegreeOfFreedomQ;
 		serverCmd.m_sendActualStateArgs.m_numDegreeOfFreedomU = totalDegreeOfFreedomU;
 
@@ -12490,7 +12506,16 @@ bool PhysicsServerCommandProcessor::processRestoreStateCommand(const struct Shar
 	SharedMemoryStatus& serverCmd = serverStatusOut;
 	serverCmd.m_type = CMD_RESTORE_STATE_FAILED;
 
-	btMultiBodyWorldImporter* importer = new btMultiBodyWorldImporter(m_data->m_dynamicsWorld);
+	btBulletWorldImporter* importer = nullptr;
+	if (getDeformableWorld())
+	{
+		importer = new btDeformableMultiBodyWorldImporter(getDeformableWorld());
+	}
+	else
+	{
+		importer = new btMultiBodyWorldImporter(m_data->m_dynamicsWorld);
+	}
+
 	importer->setImporterFlags(eRESTORE_EXISTING_OBJECTS);
 
 	bool ok = false;

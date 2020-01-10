@@ -54,6 +54,7 @@
 
 static PyObject* SpamError;
 #define B3_MAX_NUM_END_EFFECTORS 128
+#define B3_MAX_SOFTBODY_NODES 2048
 #define MAX_PHYSICS_CLIENTS 1024
 static b3PhysicsClientHandle sPhysicsClients1[MAX_PHYSICS_CLIENTS] = {0};
 static int sPhysicsClientsGUI[MAX_PHYSICS_CLIENTS] = {0};
@@ -2127,6 +2128,191 @@ static PyObject* pybullet_createSoftBodyAnchor(PyObject* self, PyObject* args, P
 	return NULL;
 }
 
+static int pybullet_internalGetSoftBodyPositions(
+		int bodyUniqueId, int* numNodes, double positions[], b3PhysicsClientHandle sm)
+{
+	if (0 == sm)
+	{
+		PyErr_SetString(SpamError, "Not connected to physics server.");
+		return 0;
+	}
+
+	{
+		{
+			b3SharedMemoryCommandHandle cmd_handle =
+				b3RequestActualStateCommandInit(sm, bodyUniqueId);
+			b3SharedMemoryStatusHandle status_handle =
+				b3SubmitClientCommandAndWaitStatus(sm, cmd_handle);
+
+			const int status_type = b3GetStatusType(status_handle);
+			if (status_type != CMD_ACTUAL_STATE_UPDATE_COMPLETED)
+			{
+				PyErr_SetString(SpamError, "getBasePositionAndOrientation failed.");
+				return 0;
+			}
+
+			// Decode the status_handle into the fields we need
+			int numDegreeOfFreedomQ;
+			const double* actualStateQ;
+			b3GetStatusActualState(
+						status_handle,
+						0 /* body_unique_id */,
+						&numDegreeOfFreedomQ,
+						0 /* num_degree_of_freedom_u */,
+						0 /* root_local_inertial_frame */,
+						&actualStateQ,
+						0 /* actual_state_q_dot */,
+						0 /* joint_reaction_forces */);
+
+			// Copy the decoded information over to the destination arrays
+			*numNodes = numDegreeOfFreedomQ - 7;
+			if (*numNodes < 0 || *numNodes > B3_MAX_SOFTBODY_NODES)
+			{
+				PyErr_SetString(SpamError, "getSoftBodyPositions failed - bad number of nodes.");
+				return 0;
+			}
+			memcpy(positions, actualStateQ + 7, *numNodes * 3 * sizeof(double));
+		}
+	}
+	return 1;
+}
+
+static int pybullet_internalGetSoftBodyVelocities(
+		int bodyUniqueId, int* numNodes, double velocities[], b3PhysicsClientHandle sm)
+{
+	if (0 == sm)
+	{
+		PyErr_SetString(SpamError, "Not connected to physics server.");
+		return 0;
+	}
+
+	{
+		{
+			b3SharedMemoryCommandHandle cmd_handle =
+				b3RequestActualStateCommandInit(sm, bodyUniqueId);
+			b3SharedMemoryStatusHandle status_handle =
+				b3SubmitClientCommandAndWaitStatus(sm, cmd_handle);
+
+			const int status_type = b3GetStatusType(status_handle);
+			if (status_type != CMD_ACTUAL_STATE_UPDATE_COMPLETED)
+			{
+				PyErr_SetString(SpamError, "getBasePositionAndOrientation failed.");
+				return 0;
+			}
+
+			// Decode the status_handle into the fields we need
+			int numDegreeOfFreedomQ;
+			const double* actualStateQdot;
+			b3GetStatusActualState(
+						status_handle,
+						0 /* body_unique_id */,
+						&numDegreeOfFreedomQ,
+						0 /* num_degree_of_freedom_u */,
+						0 /* root_local_inertial_frame */,
+						0 /* actual_state_q */,
+						&actualStateQdot,
+						0 /* joint_reaction_forces */);
+
+			// Copy the decoded information over to the destination arrays
+			*numNodes = numDegreeOfFreedomQ - 7;
+			if (*numNodes < 0 || *numNodes > B3_MAX_SOFTBODY_NODES)
+			{
+				PyErr_SetString(SpamError, "getSoftBodyPositions failed - bad number of nodes.");
+				return 0;
+			}
+			memcpy(velocities, actualStateQdot + 7, *numNodes * 3 * sizeof(double));
+		}
+	}
+	return 1;
+}
+
+static PyObject* pybullet_getSoftBodyPositions(PyObject* self, PyObject* args, PyObject* keywds)
+{
+	(void)self;
+	int bodyUniqueId = -1;
+	int num_nodes = -1;
+	double positions[3 * B3_MAX_SOFTBODY_NODES];
+	PyObject* pylistPos;
+	b3PhysicsClientHandle sm = 0;
+
+	int physicsClientId = 0;
+	static char* kwlist[] = {"bodyUniqueId", "physicsClientId", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "i|i", kwlist, &bodyUniqueId, &physicsClientId))
+	{
+		return NULL;
+	}
+	sm = getPhysicsClient(physicsClientId);
+	if (sm == 0)
+	{
+		PyErr_SetString(SpamError, "Not connected to physics server.");
+		return NULL;
+	}
+	if (0 == pybullet_internalGetSoftBodyPositions(bodyUniqueId, &num_nodes, positions, sm))
+	{
+		PyErr_SetString(SpamError, "GetSoftBodyPositions failed.");
+		return NULL;
+	}
+
+	// Convert the C array of flattened positions to a list of tuples of 3 elements
+	pylistPos = PyList_New(num_nodes);
+	for (int i = 0; i < num_nodes; i++)
+	{
+		const int num = 3;
+		PyObject* pytupleNodePos = PyTuple_New(num);
+		for (int j = 0; j < num; j++)
+		{
+			PyObject* item = PyFloat_FromDouble(positions[3 * i + j]);
+			PyTuple_SetItem(pytupleNodePos, j, item);
+		}
+		PyList_SetItem(pylistPos, i, pytupleNodePos);
+	}
+
+	return pylistPos;
+}
+
+static PyObject* pybullet_getSoftBodyVelocities(PyObject* self, PyObject* args, PyObject* keywds)
+{
+	(void)self;
+	int bodyUniqueId = -1;
+	int num_nodes = -1;
+	double velocities[3 * B3_MAX_SOFTBODY_NODES];
+	PyObject* pylistPos;
+	b3PhysicsClientHandle sm = 0;
+
+	int physicsClientId = 0;
+	static char* kwlist[] = {"bodyUniqueId", "physicsClientId", NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "i|i", kwlist, &bodyUniqueId, &physicsClientId))
+	{
+		return NULL;
+	}
+	sm = getPhysicsClient(physicsClientId);
+	if (sm == 0)
+	{
+		PyErr_SetString(SpamError, "Not connected to physics server.");
+		return NULL;
+	}
+	if (0 == pybullet_internalGetSoftBodyVelocities(bodyUniqueId, &num_nodes, velocities, sm))
+	{
+		PyErr_SetString(SpamError, "GetSoftBodyPositions failed.");
+		return NULL;
+	}
+
+	// Convert the C array of flattened positions to a list of tuples of 3 elements
+	pylistPos = PyList_New(num_nodes);
+	for (int i = 0; i < num_nodes; i++)
+	{
+		const int num = 3;
+		PyObject* pytupleNodePos = PyTuple_New(num);
+		for (int j = 0; j < num; j++)
+		{
+			PyObject* item = PyFloat_FromDouble(velocities[3 * i + j]);
+			PyTuple_SetItem(pytupleNodePos, j, item);
+		}
+		PyList_SetItem(pylistPos, i, pytupleNodePos);
+	}
+
+	return pylistPos;
+}
 
 #endif
 
@@ -11858,6 +12044,12 @@ static PyMethodDef SpamMethods[] = {
 
 	{"createSoftBodyAnchor", (PyCFunction)pybullet_createSoftBodyAnchor, METH_VARARGS | METH_KEYWORDS,
 	 "Create an anchor (attachment) between a soft body and a rigid or multi body."},
+
+	{"getSoftBodyPositions", (PyCFunction)pybullet_getSoftBodyPositions, METH_VARARGS | METH_KEYWORDS,
+	 "Get the position of each node that defines the soft body."},
+
+	{"getSoftBodyVelocities", (PyCFunction)pybullet_getSoftBodyVelocities, METH_VARARGS | METH_KEYWORDS,
+	 "Get the velocity of each node that defines the soft body."},
 
 #endif
 	{"loadBullet", (PyCFunction)pybullet_loadBullet, METH_VARARGS | METH_KEYWORDS,

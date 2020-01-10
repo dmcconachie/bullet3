@@ -8107,8 +8107,8 @@ bool PhysicsServerCommandProcessor::processLoadSoftBodyCommand(const struct Shar
 			std::string err = tinyobj::LoadObj(attribute, shapes, out_found_sim_filename.c_str(), "", fileIO);
 			if (!shapes.empty())
 			{
-		        const tinyobj::shape_t& shape = shapes[0];
-		        btAlignedObjectArray<btScalar> vertices;
+				const tinyobj::shape_t& shape = shapes[0];
+				btAlignedObjectArray<btScalar> vertices;
 				btAlignedObjectArray<int> indices;
 				for (int i = 0; i < attribute.vertices.size(); i++)
 				{
@@ -8120,7 +8120,7 @@ bool PhysicsServerCommandProcessor::processLoadSoftBodyCommand(const struct Shar
 				}
 				int numTris = shape.mesh.indices.size() / 3;
 				if (numTris > 0)
-		        {
+				{
 					{
 					btSoftMultiBodyDynamicsWorld* softWorld = getSoftWorld();
 					if (softWorld)

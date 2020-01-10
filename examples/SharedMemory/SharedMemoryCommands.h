@@ -485,27 +485,6 @@ enum EnumSimParamUpdateFlags
 	SIM_PARAM_UPDATE_WARM_STARTING_FACTOR = 1 << 27,
 	SIM_PARAM_UPDATE_ARTICULATED_WARM_STARTING_FACTOR = 1 << 28,
 	SIM_PARAM_UPDATE_SPARSE_SDF = 1 << 29,
-        
-};
-
-enum EnumLoadSoftBodyUpdateFlags
-{
-	LOAD_SOFT_BODY_FILE_NAME = 1,
-	LOAD_SOFT_BODY_UPDATE_SCALE = 1<<1,
-	LOAD_SOFT_BODY_UPDATE_MASS = 1<<2,
-	LOAD_SOFT_BODY_UPDATE_COLLISION_MARGIN = 1<<3,
-	LOAD_SOFT_BODY_INITIAL_POSITION = 1<<4,
-        LOAD_SOFT_BODY_INITIAL_ORIENTATION = 1<<5,
-        LOAD_SOFT_BODY_ADD_COROTATED_FORCE = 1<<6,
-        LOAD_SOFT_BODY_ADD_MASS_SPRING_FORCE = 1<<7,
-        LOAD_SOFT_BODY_ADD_GRAVITY_FORCE = 1<<8,
-        LOAD_SOFT_BODY_SET_COLLISION_HARDNESS = 1<<9,
-        LOAD_SOFT_BODY_SET_FRICTION_COEFFICIENT = 1<<10,
-        LOAD_SOFT_BODY_ADD_BENDING_SPRINGS = 1<<11,
-        LOAD_SOFT_BODY_ADD_NEOHOOKEAN_FORCE = 1<<12,
-        LOAD_SOFT_BODY_USE_SELF_COLLISION = 1<<13,
-    LOAD_SOFT_BODY_USE_FACE_CONTACT = 1<<14,
-    LOAD_SOFT_BODY_SIM_MESH = 1<<15,
 };
 
 enum EnumSimParamInternalSimFlags
@@ -515,6 +494,26 @@ enum EnumSimParamInternalSimFlags
 
 ///Controlling a robot involves sending the desired state to its joint motor controllers.
 ///The control mode determines the state variables used for motor control.
+
+enum EnumLoadSoftBodyUpdateFlags
+{
+	LOAD_SOFT_BODY_FILE_NAME = 1,
+	LOAD_SOFT_BODY_UPDATE_SCALE = 1<<1,
+	LOAD_SOFT_BODY_UPDATE_MASS = 1<<2,
+	LOAD_SOFT_BODY_UPDATE_COLLISION_MARGIN = 1<<3,
+	LOAD_SOFT_BODY_INITIAL_POSITION = 1<<4,
+	LOAD_SOFT_BODY_INITIAL_ORIENTATION = 1<<5,
+	LOAD_SOFT_BODY_ADD_COROTATED_FORCE = 1<<6,
+	LOAD_SOFT_BODY_ADD_MASS_SPRING_FORCE = 1<<7,
+	LOAD_SOFT_BODY_ADD_GRAVITY_FORCE = 1<<8,
+	LOAD_SOFT_BODY_SET_COLLISION_HARDNESS = 1<<9,
+	LOAD_SOFT_BODY_SET_FRICTION_COEFFICIENT = 1<<10,
+	LOAD_SOFT_BODY_ADD_BENDING_SPRINGS = 1<<11,
+	LOAD_SOFT_BODY_ADD_NEOHOOKEAN_FORCE = 1<<12,
+	LOAD_SOFT_BODY_USE_SELF_COLLISION = 1<<13,
+	LOAD_SOFT_BODY_USE_FACE_CONTACT = 1<<14,
+	LOAD_SOFT_BODY_SIM_MESH = 1<<15,
+};
 
 struct LoadSoftBodyArgs
 {
@@ -543,6 +542,59 @@ struct LoadSoftBodyArgs
 struct b3LoadSoftBodyResultArgs
 {
 	int m_objectUniqueId;
+};
+
+enum EnumCreateClothPatchObjFileFlags
+{
+	CREATE_CLOTH_PATCH_OBJ_FILE_NAME = 1,
+	CREATE_CLOTH_PATCH_OBJ_FILE_CORNERS = 1<<2,
+	CREATE_CLOTH_PATCH_OBJ_FILE_NUM_NODES = 1<<3,
+};
+
+// TODO: verify that using the union this way doesn't break anything
+struct CreateClothPatchObjFileArgs
+{
+	char m_fileName[MAX_FILENAME_LENGTH];
+	double m_corner00[3];
+	double m_corner10[3];
+	double m_corner01[3];
+	double m_corner11[3];
+	int m_numNodesX;
+	int m_numNodesY;
+};
+
+enum EnumSoftBodyParamsUpdateFlags
+{
+	SOFT_BODY_PARAM_UPDATE_COLOR = 1,
+	SOFT_BODY_PARAM_UPDATE_MASS= 1<<1,
+	SOFT_BODY_PARAM_UPDATE_DAMPING = 1<<2,
+	SOFT_BODY_PARAM_UPDATE_DYNAMIC_FRICTION = 1<<3,
+	SOFT_BODY_PARAM_UPDATE_COLLISION_MARGIN = 1<<4,
+	SOFT_BODY_PARAM_UPDATE_LINEAR_STIFFNESS = 1<<5,
+	SOFT_BODY_PARAM_UPDATE_ANGULAR_STIFFNESS = 1<<6,
+	SOFT_BODY_PARAM_UPDATE_GENERATE_BENDING_CONSTRAINTS = 1<<7,
+	SOFT_BODY_PARAM_UPDATE_BENDING_CONSTRAINTS_DISTANCE = 1<<8,
+	SOFT_BODY_PARAM_UPDATE_VSOLVE_ITER = 1<<9,
+	SOFT_BODY_PARAM_UPDATE_PSOLVE_ITER = 1<<10,
+	SOFT_BODY_PARAM_UPDATE_DSOLVE_ITER = 1<<11,
+	SOFT_BODY_PARAM_UPDATE_CSOLVE_ITER = 1<<12
+};
+
+struct SoftBodyParamUpdateArgs
+{
+	double m_color[4];
+	double m_mass;
+	double m_damping;
+	double m_dynamicFriction;
+	double m_collisionMargin;
+	double m_linearStiffness;
+	double m_angularStiffness;
+	int m_generateBendingConstraints;
+	int m_bendingConstraintsDistance;
+	int m_vsolveIter;
+	int m_psolveIter;
+	int m_dsolveIter;
+	int m_csolveIter;
 };
 
 struct RequestActualStateArgs
@@ -1151,6 +1203,8 @@ struct SharedMemoryCommand
 		struct UserDebugDrawArgs m_userDebugDrawArgs;
 		struct RequestRaycastIntersections m_requestRaycastIntersections;
 		struct LoadSoftBodyArgs m_loadSoftBodyArguments;
+		struct CreateClothPatchObjFileArgs m_createClothPatchObjFileArguments;
+		struct SoftBodyParamUpdateArgs m_softBodyUpdateArguments;
 		struct VRCameraState m_vrCameraStateArguments;
 		struct StateLoggingRequest m_stateLoggingArguments;
 		struct ConfigureOpenGLVisualizerRequest m_configureOpenGLVisualizerArguments;

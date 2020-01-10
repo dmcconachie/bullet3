@@ -441,6 +441,170 @@ B3_SHARED_API int b3LoadSoftBodyUseFaceContact(b3SharedMemoryCommandHandle comma
 	return 0;
 }
 
+
+B3_SHARED_API b3SharedMemoryCommandHandle b3CreateClothPatchObjFileCommandInit(b3PhysicsClientHandle physClient, const char* fileName, double corner00[3], double corner10[3], double corner01[3], double corner11[3], int numNodesX, int numNodesY)
+{
+	PhysicsClient* cl = (PhysicsClient*)physClient;
+	b3Assert(cl);
+	b3Assert(cl->canSubmitCommand());
+
+	if (cl->canSubmitCommand())
+	{
+		struct SharedMemoryCommand* command = cl->getAvailableSharedMemoryCommand();
+		b3Assert(command);
+		command->m_type = CMD_CREATE_CLOTH_PATCH_OBJ_FILE;
+        CreateClothPatchObjFileArgs& args = command->m_createClothPatchObjFileArguments;
+
+        int len = strlen(fileName);
+		if (len < MAX_FILENAME_LENGTH)
+		{
+			strcpy(args.m_fileName, fileName);
+		}
+		else
+		{
+			args.m_fileName[0] = 0;
+		}
+		memcpy(args.m_corner00, corner00, sizeof(args.m_corner00));
+		memcpy(args.m_corner10, corner10, sizeof(args.m_corner10));
+		memcpy(args.m_corner01, corner01, sizeof(args.m_corner01));
+		memcpy(args.m_corner11, corner11, sizeof(args.m_corner11));
+		args.m_numNodesX = numNodesX;
+		args.m_numNodesY = numNodesY;
+		command->m_updateFlags = CREATE_CLOTH_PATCH_OBJ_FILE_NAME | CREATE_CLOTH_PATCH_OBJ_FILE_CORNERS | CREATE_CLOTH_PATCH_OBJ_FILE_NUM_NODES;
+		return (b3SharedMemoryCommandHandle)command;
+	}
+	return 0;
+}
+
+#if 0
+B3_SHARED_API int b3CreatePatchSetColor(b3SharedMemoryCommandHandle commandHandle, double color[4])
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	memcpy(command->m_createPatchArguments.m_color, color, sizeof(command->m_createPatchArguments.m_color));
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_COLOR;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetFixedCorners(b3SharedMemoryCommandHandle commandHandle, int fixedCorners)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_fixedCorners = fixedCorners;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_FIXED_CORNERS;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetMass(b3SharedMemoryCommandHandle commandHandle, double mass)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_mass = mass;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_MASS;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetDamping(b3SharedMemoryCommandHandle commandHandle, double damping)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_damping = damping;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_DAMPING;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetDynamicFriction(b3SharedMemoryCommandHandle commandHandle, double dynamicFriction)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_dynamicFriction = dynamicFriction;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_DYNAMIC_FRICTION;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetCollisionMargin(b3SharedMemoryCommandHandle commandHandle, double collisionMargin)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_collisionMargin = collisionMargin;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_COLLISION_MARGIN;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetLinearStiffness(b3SharedMemoryCommandHandle commandHandle, double linearStiffness)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_linearStiffness = linearStiffness;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_LINEAR_STIFFNESS;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetAngularStiffness(b3SharedMemoryCommandHandle commandHandle, double angularStiffness)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_angularStiffness = angularStiffness;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_ANGULAR_STIFFNESS;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchGenerateBendingConstraints(b3SharedMemoryCommandHandle commandHandle, int generateBendingConstraints)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_generateBendingConstraints = generateBendingConstraints;
+	command->m_updateFlags |= CREATE_PATCH_GENERATE_BENDING_CONSTRAINTS;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetBendingConstraintsDistance(b3SharedMemoryCommandHandle commandHandle, int bendingConstraintsDistance)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_bendingConstraintsDistance = bendingConstraintsDistance;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_BENDING_CONSTRAINTS_DISTANCE;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetVsolveIter(b3SharedMemoryCommandHandle commandHandle, int vsolveIter)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_vsolveIter = vsolveIter;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_VSOLVE_ITER;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetPsolveIter(b3SharedMemoryCommandHandle commandHandle, int psolveIter)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_psolveIter = psolveIter;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_PSOLVE_ITER;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetDsolveIter(b3SharedMemoryCommandHandle commandHandle, int dsolveIter)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_dsolveIter = dsolveIter;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_DSOLVE_ITER;
+	return 0;
+}
+
+B3_SHARED_API int b3CreatePatchSetCsolveIter(b3SharedMemoryCommandHandle commandHandle, int csolveIter)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_CREATE_PATCH);
+	command->m_createPatchArguments.m_csolveIter = csolveIter;
+	command->m_updateFlags |= CREATE_PATCH_UPDATE_CSOLVE_ITER;
+	return 0;
+}
+#endif
+
+
 B3_SHARED_API b3SharedMemoryCommandHandle b3LoadUrdfCommandInit(b3PhysicsClientHandle physClient, const char* urdfFileName)
 {
 	PhysicsClient* cl = (PhysicsClient*)physClient;

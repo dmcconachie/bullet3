@@ -1499,6 +1499,8 @@ const SharedMemoryStatus* PhysicsClientSharedMemory::processServerStatus()
 			case CMD_ADD_USER_DATA_COMPLETED:
 			case CMD_REMOVE_STATE_FAILED:
 			case CMD_REMOVE_STATE_COMPLETED:
+			case CMD_CREATE_CLOTH_PATCH_OBJ_FILE_FAILED:
+			case CMD_CREATE_CLOTH_PATCH_OBJ_FILE_COMPLETED:
 			{
 				break;
 			}

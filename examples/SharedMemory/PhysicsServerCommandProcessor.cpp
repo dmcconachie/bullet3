@@ -8381,18 +8381,18 @@ bool PhysicsServerCommandProcessor::processLoadSoftBodyCommand(const struct Shar
 
 #ifdef ENABLE_LINK_MAPPER
 			if (m_data->m_urdfLinkNameMapper.size())
-            {
-              serverStatusOut.m_numDataStreamBytes = m_data->m_urdfLinkNameMapper.at(m_data->m_urdfLinkNameMapper.size() - 1)->m_memSerializer->getCurrentBufferSize();
-            }
+			{
+				serverStatusOut.m_numDataStreamBytes = m_data->m_urdfLinkNameMapper.at(m_data->m_urdfLinkNameMapper.size() - 1)->m_memSerializer->getCurrentBufferSize();
+			}
 #endif
-            serverStatusOut.m_dataStreamArguments.m_bodyUniqueId = bodyUniqueId;
-            InternalBodyData* body = m_data->m_bodyHandles.getHandle(bodyUniqueId);
-            strcpy(serverStatusOut.m_dataStreamArguments.m_bodyName, body->m_bodyName.c_str());
+			serverStatusOut.m_dataStreamArguments.m_bodyUniqueId = bodyUniqueId;
+			InternalBodyData* body = m_data->m_bodyHandles.getHandle(bodyUniqueId);
+			strcpy(serverStatusOut.m_dataStreamArguments.m_bodyName, body->m_bodyName.c_str());
 
-		    b3Notification notification;
-		    notification.m_notificationType = BODY_ADDED;
-		    notification.m_bodyArgs.m_bodyUniqueId = bodyUniqueId;
-		    m_data->m_pluginManager.addNotification(notification);
+			b3Notification notification;
+			notification.m_notificationType = BODY_ADDED;
+			notification.m_bodyArgs.m_bodyUniqueId = bodyUniqueId;
+			m_data->m_pluginManager.addNotification(notification);
 		}
 	}
 #endif

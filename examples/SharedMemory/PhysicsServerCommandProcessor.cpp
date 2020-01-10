@@ -8401,6 +8401,8 @@ bool PhysicsServerCommandProcessor::processLoadSoftBodyCommand(const struct Shar
 
 bool PhysicsServerCommandProcessor::processCreateClothPatchObjFileCommand(const struct SharedMemoryCommand& clientCmd, struct SharedMemoryStatus& serverStatusOut, char* bufferServerToClient, int bufferSizeInBytes)
 {
+	(void)bufferServerToClient;
+	(void)bufferSizeInBytes;
 	serverStatusOut.m_type = CMD_CREATE_CLOTH_PATCH_OBJ_FILE_FAILED;
 	bool hasStatus = true;
 
@@ -8546,132 +8548,97 @@ bool PhysicsServerCommandProcessor::processCreateClothPatchObjFileCommand(const 
 	serverStatusOut.m_type = CMD_CREATE_CLOTH_PATCH_OBJ_FILE_COMPLETED;
 
 
-//	const int fixedCorners = ((clientCmd.m_updateFlags & CREATE_PATCH_FIXED_CORNERS) != 0) ? createPatchArgs.m_fixedCorners : 0;
-//	const bool genDiags = true;
+	return hasStatus;
+}
 
-#if 0
-	btSoftBody* psb = NULL;
-	btSoftMultiBodyDynamicsWorld* softWorld = getSoftWorld();
-	btDeformableMultiBodyDynamicsWorld* deformWorld = getDeformableWorld();
-	if (softWorld)
-	{
-		psb = btSoftBodyHelpers::CreatePatch(
-				softWorld->getWorldInfo(),
-				corner00, corner10, corner01, corner11,
-				args.m_numNodesX, args.m_numNodesY,
-				fixedCorners, genDiags);
-	}
-	if (deformWorld)
-	{
-		psb = btSoftBodyHelpers::CreatePatch(
-					deformWorld->getWorldInfo(),
-					corner00, corner10, corner01, corner11,
-					args.m_numNodesX, args.m_numNodesY,
-					fixedCorners, genDiags);
-	}
+bool PhysicsServerCommandProcessor::processUpdateSoftBodyParamsCommand(const struct SharedMemoryCommand& clientCmd, struct SharedMemoryStatus& serverStatusOut, char* bufferServerToClient, int bufferSizeInBytes)
+{
+	(void)bufferServerToClient;
+	(void)bufferSizeInBytes;
+	serverStatusOut.m_type = CMD_CUSTOM_COMMAND_FAILED;
+	bool hasStatus = true;
 
-	if (psb == NULL)
+	// Retrieve the specified soft body
+	const UpdateSoftBodyParamsArgs& args = clientCmd.m_updateSoftBodyParamsArguments;
+	InternalBodyData* body = m_data->m_bodyHandles.getHandle(args.m_bodyUniqueId);
+	if (!body || !body->m_softBody)
 	{
-		serverStatusOut.m_type = CMD_CREATE_PATCH_FAILED;
+		serverStatusOut.m_type = CMD_CUSTOM_COMMAND_FAILED;
 		hasStatus = true;
 		return hasStatus;
 	}
+	btSoftBody* psb = body->m_softBody;
 
 	// Parse any additional optional arguments
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_COLOR) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_COLOR) != 0)
 	{
 		// TODO;
 		b3Assert(false && "Not implemented");
 	}
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_MASS) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_MASS) != 0)
 	{
 		psb->setTotalMass(args.m_mass, true);
 	}
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_DAMPING) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_DAMPING) != 0)
 	{
 		psb->m_cfg.kDP = args.m_damping;
 	}
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_DYNAMIC_FRICTION) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_DYNAMIC_FRICTION) != 0)
 	{
 		psb->m_cfg.kDF = args.m_dynamicFriction;
 	}
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_COLLISION_MARGIN) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_COLLISION_MARGIN) != 0)
 	{
 		psb->getCollisionShape()->setMargin(args.m_collisionMargin);
 	}
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_LINEAR_STIFFNESS) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_LINEAR_STIFFNESS) != 0)
 	{
 		psb->m_materials[0]->m_kLST = args.m_linearStiffness;
 	}
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_ANGULAR_STIFFNESS) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_ANGULAR_STIFFNESS) != 0)
 	{
 		psb->m_materials[0]->m_kAST = args.m_angularStiffness;
 	}
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_GENERATE_BENDING_CONSTRAINTS) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_GENERATE_BENDING_CONSTRAINTS) != 0)
 	{
 		if (args.m_generateBendingConstraints)
 		{
-			const bool useDefaultDistance = (clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_BENDING_CONSTRAINTS_DISTANCE) == 0;
+			const bool useDefaultDistance = (clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_BENDING_CONSTRAINTS_DISTANCE) == 0;
 			const int distance = useDefaultDistance ? 2 : args.m_bendingConstraintsDistance;
 			psb->generateBendingConstraints(distance, psb->m_materials[0]);
 			psb->randomizeConstraints();
 		}
 	}
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_VSOLVE_ITER) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_VSOLVE_ITER) != 0)
 	{
 		psb->m_cfg.viterations = args.m_vsolveIter;
 	}
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_PSOLVE_ITER) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_PSOLVE_ITER) != 0)
 	{
 		psb->m_cfg.piterations = args.m_psolveIter;
 	}
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_DSOLVE_ITER) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_DSOLVE_ITER) != 0)
 	{
 		psb->m_cfg.diterations = args.m_dsolveIter;
 	}
-	if ((clientCmd.m_updateFlags & CREATE_PATCH_UPDATE_CSOLVE_ITER) != 0)
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_CSOLVE_ITER) != 0)
 	{
 		psb->m_cfg.citerations = args.m_csolveIter;
 	}
 
 	// Set active collicion flags
 	// TODO: configurable collision flags and cluster generation
-	psb->m_cfg.collisions   =
-			btSoftBody::fCollision::CL_SS |     // Cluster collisions, soft vs. soft
-			btSoftBody::fCollision::CL_RS |     // Cluster collisions, soft vs. rigid
-			btSoftBody::fCollision::CL_SELF;    // Cluster collisions, self - requires CL_SS
-	psb->generateClusters(500);
-	for (int i = 0; i < psb->m_clusters.size(); ++i)
-	{
-		psb->m_clusters[i]->m_selfCollisionImpulseFactor = 0.001f; // default 0.01
-	}
+//	psb->m_cfg.collisions   =
+//			btSoftBody::fCollision::CL_SS |     // Cluster collisions, soft vs. soft
+//			btSoftBody::fCollision::CL_RS |     // Cluster collisions, soft vs. rigid
+//			btSoftBody::fCollision::CL_SELF;    // Cluster collisions, self - requires CL_SS
+//	psb->generateClusters(500);
+//	for (int i = 0; i < psb->m_clusters.size(); ++i)
+//	{
+//		psb->m_clusters[i]->m_selfCollisionImpulseFactor = 0.001f; // default 0.01
+//	}
 
-	if (softWorld)
-	{
-		softWorld->addSoftBody(psb);
-	}
-	if (deformWorld)
-	{
-		deformWorld->addSoftBody(psb);
-	}
-
-	const int bodyUniqueId = m_data->m_bodyHandles.allocHandle();
-	InternalBodyHandle* bodyHandle = m_data->m_bodyHandles.getHandle(bodyUniqueId);
-	bodyHandle->m_softBody = psb;
-	psb->getCollisionShape()->setUserPointer(psb);
-
-
-	serverStatusOut.m_createPatchResultArguments.m_objectUniqueId = bodyUniqueId;
-	const int streamSizeInBytes = createBodyInfoStream(bodyUniqueId, bufferServerToClient, bufferSizeInBytes);
-	serverStatusOut.m_numDataStreamBytes = streamSizeInBytes;
-	serverStatusOut.m_type = CMD_CREATE_PATCH_COMPLETED;
-
-	b3Notification notification;
-	notification.m_notificationType = BODY_ADDED;
-	notification.m_bodyArgs.m_bodyUniqueId = bodyUniqueId;
-	m_data->m_pluginManager.addNotification(notification);
-
-#endif
+	serverStatusOut.m_type = CMD_CUSTOM_COMMAND_COMPLETED;
 	return hasStatus;
 }
 
@@ -13122,6 +13089,11 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 		case CMD_CREATE_CLOTH_PATCH_OBJ_FILE:
 		{
 			hasStatus = processCreateClothPatchObjFileCommand(clientCmd, serverStatusOut, bufferServerToClient, bufferSizeInBytes);
+			break;
+		}
+		case CMD_UPDATE_SOFT_BODY_PARAMETERS:
+		{
+			hasStatus = processUpdateSoftBodyParamsCommand(clientCmd, serverStatusOut, bufferServerToClient, bufferSizeInBytes);
 			break;
 		}
 		case CMD_CREATE_SENSOR:

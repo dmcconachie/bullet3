@@ -563,25 +563,26 @@ struct CreateClothPatchObjFileArgs
 	int m_numNodesY;
 };
 
-enum EnumSoftBodyParamsUpdateFlags
+enum EnumUpdateSoftBodyParamsFlags
 {
-	SOFT_BODY_PARAM_UPDATE_COLOR = 1,
-	SOFT_BODY_PARAM_UPDATE_MASS= 1<<1,
-	SOFT_BODY_PARAM_UPDATE_DAMPING = 1<<2,
-	SOFT_BODY_PARAM_UPDATE_DYNAMIC_FRICTION = 1<<3,
-	SOFT_BODY_PARAM_UPDATE_COLLISION_MARGIN = 1<<4,
-	SOFT_BODY_PARAM_UPDATE_LINEAR_STIFFNESS = 1<<5,
-	SOFT_BODY_PARAM_UPDATE_ANGULAR_STIFFNESS = 1<<6,
-	SOFT_BODY_PARAM_UPDATE_GENERATE_BENDING_CONSTRAINTS = 1<<7,
-	SOFT_BODY_PARAM_UPDATE_BENDING_CONSTRAINTS_DISTANCE = 1<<8,
-	SOFT_BODY_PARAM_UPDATE_VSOLVE_ITER = 1<<9,
-	SOFT_BODY_PARAM_UPDATE_PSOLVE_ITER = 1<<10,
-	SOFT_BODY_PARAM_UPDATE_DSOLVE_ITER = 1<<11,
-	SOFT_BODY_PARAM_UPDATE_CSOLVE_ITER = 1<<12
+	UPDATE_SOFT_BODY_PARAM_COLOR = 1,
+	UPDATE_SOFT_BODY_PARAM_MASS= 1<<1,
+	UPDATE_SOFT_BODY_PARAM_DAMPING = 1<<2,
+	UPDATE_SOFT_BODY_PARAM_DYNAMIC_FRICTION = 1<<3,
+	UPDATE_SOFT_BODY_PARAM_COLLISION_MARGIN = 1<<4,
+	UPDATE_SOFT_BODY_PARAM_LINEAR_STIFFNESS = 1<<5,
+	UPDATE_SOFT_BODY_PARAM_ANGULAR_STIFFNESS = 1<<6,
+	UPDATE_SOFT_BODY_PARAM_GENERATE_BENDING_CONSTRAINTS = 1<<7,
+	UPDATE_SOFT_BODY_PARAM_BENDING_CONSTRAINTS_DISTANCE = 1<<8,
+	UPDATE_SOFT_BODY_PARAM_VSOLVE_ITER = 1<<9,
+	UPDATE_SOFT_BODY_PARAM_PSOLVE_ITER = 1<<10,
+	UPDATE_SOFT_BODY_PARAM_DSOLVE_ITER = 1<<11,
+	UPDATE_SOFT_BODY_PARAM_CSOLVE_ITER = 1<<12,
 };
 
-struct SoftBodyParamUpdateArgs
+struct UpdateSoftBodyParamsArgs
 {
+	int m_bodyUniqueId;
 	double m_color[4];
 	double m_mass;
 	double m_damping;
@@ -1204,7 +1205,7 @@ struct SharedMemoryCommand
 		struct RequestRaycastIntersections m_requestRaycastIntersections;
 		struct LoadSoftBodyArgs m_loadSoftBodyArguments;
 		struct CreateClothPatchObjFileArgs m_createClothPatchObjFileArguments;
-		struct SoftBodyParamUpdateArgs m_softBodyUpdateArguments;
+		struct UpdateSoftBodyParamsArgs m_updateSoftBodyParamsArguments;
 		struct VRCameraState m_vrCameraStateArguments;
 		struct StateLoggingRequest m_stateLoggingArguments;
 		struct ConfigureOpenGLVisualizerRequest m_configureOpenGLVisualizerArguments;

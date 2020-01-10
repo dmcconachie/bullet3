@@ -2066,8 +2066,12 @@ static PyObject* pybullet_loadSoftBody(PyObject* self, PyObject* args, PyObject*
 		{
 			b3LoadSoftBodySetSelfCollision(command, useSelfCollision);
 		}
-		b3LoadSoftBodySetFrictionCoefficient(command, frictionCoeff);
-		statusHandle = b3SubmitClientCommandAndWaitStatus(sm, command);
+        if (frictionCoeff > 0)
+        {
+    		b3LoadSoftBodySetFrictionCoefficient(command, frictionCoeff);
+        }
+
+        statusHandle = b3SubmitClientCommandAndWaitStatus(sm, command);
 		statusType = b3GetStatusType(statusHandle);
 		if (statusType != CMD_LOAD_SOFT_BODY_COMPLETED)
 		{
@@ -2085,66 +2089,21 @@ static PyObject* pybullet_createClothPatchObjFile(PyObject* self, PyObject* args
 	int physicsClientId = 0;
 
 	// Required Arguments
-    const char* fileName = "";
+	const char* fileName = "";
 	PyObject* cornersObj = 0;
 	PyObject* numNodesObj = 0;
 
-	// Optional Arguments
-//	PyObject* colorObj = 0;
-//	int fixedCorners = -1;
-//	double mass = -1;
-//	double damping = -1;
-//	double dynamicFriction = -1;
-//	double collisionMargin = -1;
-//	double linearStiffness = -1;
-//	double angularStiffness = -1;
-//	int generateBendingConstraints = -1;
-//	int bendingConstraintsDistance = -1;
-//	int vsolveIter = -1;
-//	int psolveIter = -1;
-//	int dsolveIter = -1;
-//	int csolveIter = -1;
-
 	static char* kwlist[] = {
-        "fileName",
+		"fileName",
 		"corners",
 		"numNodes",
-//		"color",
-//		"fixedCorners",
-//		"mass",
-//		"damping",
-//		"dynamicFriction",
-//		"collisionMargin",
-//		"linearStiffness",
-//		"angularStiffness",
-//		"generateBendingConstraints",
-//		"bendingConstraintsDistance",
-//		"vsolveIter",
-//		"psolveIter",
-//		"dsolveIter",
-//		"csolveIter",
 		"physicsClientId",
 		NULL};
 	if (!PyArg_ParseTupleAndKeywords(args, keywds, "sOO|i:createClothPatchObjFile", kwlist,
-                                     &fileName,
-									 &cornersObj,
-									 &numNodesObj,
-									 // Optional:
-//									 &colorObj,
-//									 &fixedCorners,
-//									 &mass,
-//									 &damping,
-//									 &dynamicFriction,
-//									 &collisionMargin,
-//									 &linearStiffness,
-//									 &angularStiffness,
-//									 &generateBendingConstraints,
-//									 &bendingConstraintsDistance,
-//									 &vsolveIter,
-//									 &psolveIter,
-//									 &dsolveIter,
-//									 &csolveIter,
-									 &physicsClientId))
+	                                 &fileName,
+	                                 &cornersObj,
+	                                 &numNodesObj,
+	                                 &physicsClientId))
 	{
 		PyErr_SetString(SpamError, "Unable to parse argument list.");
 		return NULL;
@@ -2156,7 +2115,6 @@ static PyObject* pybullet_createClothPatchObjFile(PyObject* self, PyObject* args
 	double corner11[3];
 	int numNodesX = -1;
 	int numNodesY = -1;
-//	double color[4] = {-1, -1, -1, -1};
 	// Convert python objects to c objects
 	{
 		// Convert cornersObj from python to c
@@ -2185,16 +2143,6 @@ static PyObject* pybullet_createClothPatchObjFile(PyObject* self, PyObject* args
 			PyErr_SetString(SpamError, "Each element of numNodes must be > 0");
 			return NULL;
 		}
-
-		// Convert colorObj from python to c if it was passed
-//		if (colorObj)
-//		{
-//			if (!pybullet_internalSetVector4d(colorObj, color))
-//			{
-//				PyErr_SetString(SpamError, "Cannot convert color.");
-//				return NULL;
-//			}
-//		}
 	}
 
 	// Load the specified (or default) physics client
@@ -2206,83 +2154,157 @@ static PyObject* pybullet_createClothPatchObjFile(PyObject* self, PyObject* args
 	}
 
 	// Create the mesh to be loaded later by loadSoftBody
-    b3SharedMemoryStatusHandle statusHandle;
-    int statusType;
-    b3SharedMemoryCommandHandle command =
-        b3CreateClothPatchObjFileCommandInit(sm, fileName, corner00, corner10, corner01, corner11, numNodesX, numNodesY);
+	b3SharedMemoryCommandHandle command =
+		b3CreateClothPatchObjFileCommandInit(sm, fileName, corner00, corner10, corner01, corner11, numNodesX, numNodesY);
+	b3SharedMemoryStatusHandle statusHandle = b3SubmitClientCommandAndWaitStatus(sm, command);
+	int statusType = b3GetStatusType(statusHandle);
+	if (statusType != CMD_CREATE_CLOTH_PATCH_OBJ_FILE_COMPLETED)
+	{
+		PyErr_SetString(SpamError, "Cannot create patch.");
+		return NULL;
+	}
 
-    statusHandle = b3SubmitClientCommandAndWaitStatus(sm, command);
-    statusType = b3GetStatusType(statusHandle);
-    if (statusType != CMD_CREATE_CLOTH_PATCH_OBJ_FILE_COMPLETED)
-    {
-        PyErr_SetString(SpamError, "Cannot create patch.");
-        return NULL;
-    }
-
-    Py_INCREF(Py_None);
+	Py_INCREF(Py_None);
 	return Py_None;
+}
 
+static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyObject* keywds)
+{
+	(void)self;
+	int physicsClientId = 0;
 
-#if 0
-		// Set the optional argumnents if they were passed
-		if (colorObj)
+    int bodyUniqueId = -1;
+	PyObject* colorObj = 0;
+	double mass = -1;
+	double damping = -1;
+	double dynamicFriction = -1;
+	double collisionMargin = -1;
+	double linearStiffness = -1;
+	double angularStiffness = -1;
+	int generateBendingConstraints = -1;
+	int bendingConstraintsDistance = -1;
+	int vsolveIter = -1;
+	int psolveIter = -1;
+	int dsolveIter = -1;
+	int csolveIter = -1;
+
+	static char* kwlist[] = {
+        "bodyUniqueId",
+		"color",
+		"mass",
+		"damping",
+		"dynamicFriction",
+		"collisionMargin",
+		"linearStiffness",
+		"angularStiffness",
+		"generateBendingConstraints",
+		"bendingConstraintsDistance",
+		"vsolveIter",
+		"psolveIter",
+		"dsolveIter",
+		"csolveIter",
+		"physicsClientId",
+		NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "i|Oddddddiiiiiii:createClothPatchObjFile", kwlist,
+	                                 &bodyUniqueId,
+	                                 &colorObj,
+	                                 &mass,
+	                                 &damping,
+	                                 &dynamicFriction,
+	                                 &collisionMargin,
+	                                 &linearStiffness,
+	                                 &angularStiffness,
+	                                 &generateBendingConstraints,
+	                                 &bendingConstraintsDistance,
+	                                 &vsolveIter,
+	                                 &psolveIter,
+	                                 &dsolveIter,
+	                                 &csolveIter,
+	                                 &physicsClientId))
+	{
+		PyErr_SetString(SpamError, "Unable to parse argument list.");
+		return NULL;
+	}
+
+    b3PhysicsClientHandle sm = getPhysicsClient(physicsClientId);
+	if (sm == 0)
+	{
+		PyErr_SetString(SpamError, "Not connected to physics server.");
+		return NULL;
+	}
+
+	// Set the requried arguments
+	b3SharedMemoryCommandHandle command = b3UpdateSoftBodyParamsCommandInit(sm, bodyUniqueId);
+	// Set the optional argumnents if they were passed
+	if (colorObj)
+	{
+		double color[4];
+		if (!pybullet_internalSetVector4d(colorObj, color))
 		{
-			b3CreatePatchSetColor(command, color);
+			PyErr_SetString(SpamError, "Cannot convert color.");
+			return NULL;
 		}
-		if (fixedCorners != -1)
-		{
-			b3CreatePatchSetFixedCorners(command, fixedCorners);
-		}
-		if (mass > 0)
-		{
-			b3CreatePatchSetMass(command, mass);
-		}
-		if (damping > 0)
-		{
-			b3CreatePatchSetDamping(command, damping);
-		}
-		if (dynamicFriction > 0)
-		{
-			b3CreatePatchSetDynamicFriction(command, dynamicFriction);
-		}
-		if (collisionMargin > 0)
-		{
-			b3CreatePatchSetCollisionMargin(command, collisionMargin);
-		}
-		if (linearStiffness > 0)
-		{
-			b3CreatePatchSetLinearStiffness(command, linearStiffness);
-		}
-		if (angularStiffness > 0)
-		{
-			b3CreatePatchSetAngularStiffness(command, angularStiffness);
-		}
-		if (generateBendingConstraints != -1)
-		{
-			b3CreatePatchGenerateBendingConstraints(command, generateBendingConstraints);
-		}
-		if (bendingConstraintsDistance > 0)
-		{
-			b3CreatePatchSetBendingConstraintsDistance(command, bendingConstraintsDistance);
-		}
-		if (vsolveIter > 0)
-		{
-			b3CreatePatchSetVsolveIter(command, vsolveIter);
-		}
-		if (psolveIter > 0)
-		{
-			b3CreatePatchSetPsolveIter(command, psolveIter);
-		}
-		if (dsolveIter > 0)
-		{
-			b3CreatePatchSetDsolveIter(command, dsolveIter);
-		}
-		if (csolveIter > 0)
-		{
-			b3CreatePatchSetCsolveIter(command, csolveIter);
-		}
-//	return PyLong_FromLong(bodyUniqueId);
-#endif
+		b3UpdateSoftBodyParamsSetColor(command, color);
+	}
+	if (mass > 0)
+	{
+		b3UpdateSoftBodyParamsSetMass(command, mass);
+	}
+	if (damping > 0)
+	{
+		b3UpdateSoftBodyParamsSetDamping(command, damping);
+	}
+	if (dynamicFriction > 0)
+	{
+		b3UpdateSoftBodyParamsSetDynamicFriction(command, dynamicFriction);
+	}
+	if (collisionMargin > 0)
+	{
+		b3UpdateSoftBodyParamsSetCollisionMargin(command, collisionMargin);
+	}
+	if (linearStiffness > 0)
+	{
+		b3UpdateSoftBodyParamsSetLinearStiffness(command, linearStiffness);
+	}
+	if (angularStiffness > 0)
+	{
+		b3UpdateSoftBodyParamsSetAngularStiffness(command, angularStiffness);
+	}
+	if (generateBendingConstraints != -1)
+	{
+		b3UpdateSoftBodyParamsGenerateBendingConstraints(command, generateBendingConstraints);
+	}
+	if (bendingConstraintsDistance > 0)
+	{
+		b3UpdateSoftBodyParamsSetBendingConstraintsDistance(command, bendingConstraintsDistance);
+	}
+	if (vsolveIter > 0)
+	{
+		b3UpdateSoftBodyParamsSetVsolveIter(command, vsolveIter);
+	}
+	if (psolveIter > 0)
+	{
+		b3UpdateSoftBodyParamsSetPsolveIter(command, psolveIter);
+	}
+	if (dsolveIter > 0)
+	{
+		b3UpdateSoftBodyParamsSetDsolveIter(command, dsolveIter);
+	}
+	if (csolveIter > 0)
+	{
+		b3UpdateSoftBodyParamsSetCsolveIter(command, csolveIter);
+	}
+
+	b3SharedMemoryStatusHandle statusHandle = b3SubmitClientCommandAndWaitStatus(sm, command);
+	int statusType = b3GetStatusType(statusHandle);
+	if (statusType != CMD_CUSTOM_COMMAND_COMPLETED)
+	{
+		PyErr_SetString(SpamError, "Failed to update soft body.");
+		return NULL;
+	}
+
+	Py_INCREF(Py_None);
+	return Py_None;
 }
 
 static PyObject* pybullet_createSoftBodyAnchor(PyObject* self, PyObject* args, PyObject* keywds)
@@ -2332,7 +2354,6 @@ static PyObject* pybullet_createSoftBodyAnchor(PyObject* self, PyObject* args, P
 	PyErr_SetString(SpamError, "createSoftBodyAnchor failed.");
 	return NULL;
 }
-
 
 #endif
 
@@ -12064,6 +12085,9 @@ static PyMethodDef SpamMethods[] = {
 
 	{"createClothPatchObjFile", (PyCFunction)pybullet_createClothPatchObjFile, METH_VARARGS | METH_KEYWORDS,
 	 "Create an object file representing a patch mesh to later be loaded by loadSoftBody."},
+
+	{"setSoftBodyParams", (PyCFunction)pybullet_setSoftBodyParams, METH_VARARGS | METH_KEYWORDS,
+	 "Update the parameters of a soft body."},
 
 	{"createSoftBodyAnchor", (PyCFunction)pybullet_createSoftBodyAnchor, METH_VARARGS | METH_KEYWORDS,
 	 "Create an anchor (attachment) between a soft body and a rigid or multi body."},

@@ -646,22 +646,22 @@ extern "C"
 	B3_SHARED_API int b3LoadSoftBodyUseBendingSprings(b3SharedMemoryCommandHandle commandHandle, int useBendingSprings, double bendingStiffness);
 
 	B3_SHARED_API b3SharedMemoryCommandHandle b3CreateClothPatchObjFileCommandInit(b3PhysicsClientHandle physClient, const char* fileName, double corner00[3], double corner10[3], double corner01[3], double corner11[3], int numNodesX, int numNodesY);
-#if 0
-	B3_SHARED_API int b3CreatePatchSetColor(b3SharedMemoryCommandHandle commandHandle, double color[4]);
-	B3_SHARED_API int b3CreatePatchSetFixedCorners(b3SharedMemoryCommandHandle commandHandle, int fixedCorners);
-	B3_SHARED_API int b3CreatePatchSetMass(b3SharedMemoryCommandHandle commandHandle, double mass);
-	B3_SHARED_API int b3CreatePatchSetDamping(b3SharedMemoryCommandHandle commandHandle, double damping);
-	B3_SHARED_API int b3CreatePatchSetDynamicFriction(b3SharedMemoryCommandHandle commandHandle, double dynamicFriction);
-	B3_SHARED_API int b3CreatePatchSetCollisionMargin(b3SharedMemoryCommandHandle commandHandle, double collisionMargin);
-	B3_SHARED_API int b3CreatePatchSetLinearStiffness(b3SharedMemoryCommandHandle commandHandle, double linearStiffness);
-	B3_SHARED_API int b3CreatePatchSetAngularStiffness(b3SharedMemoryCommandHandle commandHandle, double angularStiffness);
-	B3_SHARED_API int b3CreatePatchGenerateBendingConstraints(b3SharedMemoryCommandHandle commandHandle, int generateBendingConstraints);
-	B3_SHARED_API int b3CreatePatchSetBendingConstraintsDistance(b3SharedMemoryCommandHandle commandHandle, int bendingConstraintsDistance);
-	B3_SHARED_API int b3CreatePatchSetVsolveIter(b3SharedMemoryCommandHandle commandHandle, int vsolveIter);
-	B3_SHARED_API int b3CreatePatchSetPsolveIter(b3SharedMemoryCommandHandle commandHandle, int psolveIter);
-	B3_SHARED_API int b3CreatePatchSetDsolveIter(b3SharedMemoryCommandHandle commandHandle, int dsolveIter);
-	B3_SHARED_API int b3CreatePatchSetCsolveIter(b3SharedMemoryCommandHandle commandHandle, int csolveIter);
-#endif
+
+	B3_SHARED_API b3SharedMemoryCommandHandle b3UpdateSoftBodyParamsCommandInit(b3PhysicsClientHandle physClient, const int bodyUniqueId);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetColor(b3SharedMemoryCommandHandle commandHandle, double color[4]);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetFixedCorners(b3SharedMemoryCommandHandle commandHandle, int fixedCorners);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetMass(b3SharedMemoryCommandHandle commandHandle, double mass);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetDamping(b3SharedMemoryCommandHandle commandHandle, double damping);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetDynamicFriction(b3SharedMemoryCommandHandle commandHandle, double dynamicFriction);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetCollisionMargin(b3SharedMemoryCommandHandle commandHandle, double collisionMargin);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetLinearStiffness(b3SharedMemoryCommandHandle commandHandle, double linearStiffness);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetAngularStiffness(b3SharedMemoryCommandHandle commandHandle, double angularStiffness);
+	B3_SHARED_API int b3UpdateSoftBodyParamsGenerateBendingConstraints(b3SharedMemoryCommandHandle commandHandle, int generateBendingConstraints);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetBendingConstraintsDistance(b3SharedMemoryCommandHandle commandHandle, int bendingConstraintsDistance);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetVsolveIter(b3SharedMemoryCommandHandle commandHandle, int vsolveIter);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetPsolveIter(b3SharedMemoryCommandHandle commandHandle, int psolveIter);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetDsolveIter(b3SharedMemoryCommandHandle commandHandle, int dsolveIter);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetCsolveIter(b3SharedMemoryCommandHandle commandHandle, int csolveIter);
 
 	B3_SHARED_API b3SharedMemoryCommandHandle b3InitCreateSoftBodyAnchorConstraintCommand(b3PhysicsClientHandle physClient, int softBodyUniqueId, int nodeIndex, int bodyUniqueId, int linkIndex, const double bodyFramePosition[3]);
 

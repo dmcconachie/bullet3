@@ -51,8 +51,8 @@ def setupWorld():
 
     p.createSoftBodyAnchor(clothId, 0, boxId,-1, [0.5,-0.5,0])
     p.createSoftBodyAnchor(clothId, numX-1, boxId,-1, [-0.5,-0.5,0])
-    p.createSoftBodyAnchor(clothId, numX*(numY - 1), -1, -1)
-    p.createSoftBodyAnchor(clothId, numX*numY - 1, -1, -1)
+    p.createSoftBodyAnchor(clothId, numX*(numY-1), -1, -1)
+    p.createSoftBodyAnchor(clothId, numX*numY-1, -1, -1)
 
 
 if __name__ == "__main__":

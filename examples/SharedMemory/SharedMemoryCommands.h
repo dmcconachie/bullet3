@@ -165,7 +165,7 @@ enum EnumChangeDynamicsInfoFlags
 	CHANGE_DYNAMICS_INFO_SET_ACTIVATION_STATE = 8192,
 	CHANGE_DYNAMICS_INFO_SET_JOINT_DAMPING = 16384,
 	CHANGE_DYNAMICS_INFO_SET_ANISOTROPIC_FRICTION = 32768,
-	CHANGE_DYNAMICS_INFO_SET_MAX_JOINT_VELOCITY = 1<<16,	
+	CHANGE_DYNAMICS_INFO_SET_MAX_JOINT_VELOCITY = 1<<16,
 };
 
 struct ChangeDynamicsInfoArgs
@@ -523,21 +523,21 @@ struct LoadSoftBodyArgs
 	double m_mass;
 	double m_collisionMargin;
 	double m_initialPosition[3];
-    double m_initialOrientation[4];
-    double m_springElasticStiffness;
-    double m_springDampingStiffness;
-    double m_springBendingStiffness;
-    double m_corotatedMu;
-    double m_corotatedLambda;
-    int m_useBendingSprings;
-    double m_collisionHardness;
-    double m_useSelfCollision;
-    double m_frictionCoeff;
-    double m_NeoHookeanMu;
-    double m_NeoHookeanLambda;
-    double m_NeoHookeanDamping;
-    int m_useFaceContact;
-    char m_simFileName[MAX_FILENAME_LENGTH];
+	double m_initialOrientation[4];
+	double m_springElasticStiffness;
+	double m_springDampingStiffness;
+	double m_springBendingStiffness;
+	double m_corotatedMu;
+	double m_corotatedLambda;
+	int m_useBendingSprings;
+	double m_collisionHardness;
+	double m_useSelfCollision;
+	double m_frictionCoeff;
+	double m_NeoHookeanMu;
+	double m_NeoHookeanLambda;
+	double m_NeoHookeanDamping;
+	int m_useFaceContact;
+	char m_simFileName[MAX_FILENAME_LENGTH];
 };
 
 struct b3LoadSoftBodyResultArgs
@@ -677,8 +677,8 @@ struct SdfRequestInfoArgs
 ///flags for b3ApplyExternalTorque and b3ApplyExternalForce
 enum EnumExternalForcePrivateFlags
 {
-	//    EF_LINK_FRAME=1,
-	//    EF_WORLD_FRAME=2,
+	// EF_LINK_FRAME=1,
+	// EF_WORLD_FRAME=2,
 	EF_TORQUE = 4,
 	EF_FORCE = 8,
 };

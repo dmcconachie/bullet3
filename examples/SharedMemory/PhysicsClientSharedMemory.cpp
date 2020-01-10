@@ -74,7 +74,7 @@ struct PhysicsClientSharedMemoryInternalData
 	SharedMemoryStatus m_lastServerStatus;
 
 	SendActualStateSharedMemoryStorage m_cachedState;
-	
+
 	int m_counter;
 
 	bool m_isConnected;
@@ -84,7 +84,7 @@ struct PhysicsClientSharedMemoryInternalData
 	bool m_verboseOutput;
 	double m_timeOutInSeconds;
 
-	
+
 
 	PhysicsClientSharedMemoryInternalData()
 		: m_sharedMemory(0),
@@ -397,7 +397,6 @@ bool PhysicsClientSharedMemory::connect()
 		while ((status == 0) && (clock.getTimeInSeconds()-startTime < timeOutInSeconds))
 		{
 			status = processServerStatus();
-		
 		}
 
 
@@ -862,7 +861,7 @@ const SharedMemoryStatus* PhysicsClientSharedMemory::processServerStatus()
 			case CMD_ACTUAL_STATE_UPDATE_COMPLETED:
 			{
 				B3_PROFILE("CMD_ACTUAL_STATE_UPDATE_COMPLETED");
-				
+
 				if (m_data->m_verboseOutput)
 				{
 					b3Printf("Received actual state\n");
@@ -1444,7 +1443,7 @@ const SharedMemoryStatus* PhysicsClientSharedMemory::processServerStatus()
                           {
                             b3Printf("Server loading the SoftBody OK\n");
                           }
-                          
+
                           b3Assert(serverCmd.m_numDataStreamBytes);
                           if (serverCmd.m_numDataStreamBytes > 0)
                           {
@@ -1454,12 +1453,12 @@ const SharedMemoryStatus* PhysicsClientSharedMemory::processServerStatus()
                                bf.setFileDNAisMemoryDNA();
                                bf.parse(false);
                                int bodyUniqueId = serverCmd.m_dataStreamArguments.m_bodyUniqueId;
-                               
+
                                BodyJointInfoCache* bodyJoints = new BodyJointInfoCache;
                                m_data->m_bodyJointMap.insert(bodyUniqueId, bodyJoints);
                                bodyJoints->m_bodyName = serverCmd.m_dataStreamArguments.m_bodyName;
                                bodyJoints->m_baseName = serverCmd.m_dataStreamArguments.m_bodyName;
-                                        
+
                                if (bf.ok())
                                {
                                  if (m_data->m_verboseOutput)
@@ -1548,7 +1547,7 @@ const SharedMemoryStatus* PhysicsClientSharedMemory::processServerStatus()
 					m_data->m_constraintIdsRequestInfo.push_back(constraintUid);
 				}
 			}
-			
+
 			if (numBodies > 0)
 			{
 				m_data->m_tempBackupServerStatus = m_data->m_lastServerStatus;
@@ -2019,9 +2018,9 @@ void PhysicsClientSharedMemory::getCachedCollisionShapeInformation(struct b3Coll
 void PhysicsClientSharedMemory::getCachedMeshData(struct b3MeshData* meshData)
 {
 	m_data->m_cachedMeshData.m_numVertices = m_data->m_cachedVertexPositions.size();
-	
+
 	m_data->m_cachedMeshData.m_vertices = m_data->m_cachedMeshData.m_numVertices ? &m_data->m_cachedVertexPositions[0] : 0;
-	
+
 	*meshData = m_data->m_cachedMeshData;
 }
 

@@ -6,6 +6,7 @@ INCLUDE_DIRECTORIES(
 ADD_LIBRARY(
 BulletWorldImporter
 btMultiBodyWorldImporter.cpp
+btMultiBodyWorldImporter.h
 btBulletWorldImporter.cpp
 btBulletWorldImporter.h
 btWorldImporter.cpp

@@ -30,3 +30,9 @@ CTestTestFile.cmake
 *.vcxproj
 *.vcxproj.filters
 *.sln
+
+# VSCode files
+.vscode
+
+# QtCreator files
+CMakeLists.txt.user*

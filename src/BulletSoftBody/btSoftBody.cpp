@@ -4091,7 +4091,6 @@ const char* btSoftBody::serialize(void* dataBuffer, class btSerializer* serializ
 		SoftBodyClusterData* memPtr = (SoftBodyClusterData*)chunk->m_oldPtr;
 		for (int i = 0; i < numElem; i++, memPtr++)
 		{
-			memPtr->m_adamping = m_clusters[i]->m_adamping;
 			m_clusters[i]->m_av.serializeFloat(memPtr->m_av);
 			memPtr->m_clusterIndex = m_clusters[i]->m_clusterIndex;
 			memPtr->m_collide = m_clusters[i]->m_collide;
@@ -4103,7 +4102,6 @@ const char* btSoftBody::serialize(void* dataBuffer, class btSerializer* serializ
 			memPtr->m_idmass = m_clusters[i]->m_idmass;
 			memPtr->m_imass = m_clusters[i]->m_imass;
 			m_clusters[i]->m_invwi.serializeFloat(memPtr->m_invwi);
-			memPtr->m_ldamping = m_clusters[i]->m_ldamping;
 			m_clusters[i]->m_locii.serializeFloat(memPtr->m_locii);
 			m_clusters[i]->m_lv.serializeFloat(memPtr->m_lv);
 			memPtr->m_matching = m_clusters[i]->m_matching;
@@ -4153,7 +4151,7 @@ const char* btSoftBody::serialize(void* dataBuffer, class btSerializer* serializ
 			memPtr->m_nodeIndices = memPtr->m_numNodes ? (int*)serializer->getUniquePointer((void*)&m_clusters[i]->m_nodes) : 0;
 			if (memPtr->m_nodeIndices)
 			{
-				int numElem = memPtr->m_numMasses;
+                int numElem = memPtr->m_numNodes;
 				int sz = sizeof(int);
 				btChunk* chunk = serializer->allocate(sz, numElem);
 				int* memPtr = (int*)chunk->m_oldPtr;

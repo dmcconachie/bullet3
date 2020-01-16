@@ -2130,9 +2130,15 @@ static PyObject* pybullet_createClothPatchObjFile(PyObject* self, PyObject* args
 
 		// Convert numNodesObj from python to c
 		PyObject* numNodesSeq = PySequence_Fast(numNodesObj, "Expected a sequence");
-		if (!numNodesSeq || (PySequence_Fast_GET_SIZE(numNodesSeq) != 2))
+		if (!numNodesSeq)
+		{
+			PyErr_SetString(SpamError, "Could not convert numNodes to a sequence");
+			return NULL;
+		}
+		if (PySequence_Fast_GET_SIZE(numNodesSeq) != 2)
 		{
 			PyErr_SetString(SpamError, "numNodes must be of length 2");
+			Py_DECREF(numNodesSeq);
 			return NULL;
 		}
 		numNodesX = pybullet_internalGetIntFromSequence(numNodesSeq, 0);
@@ -2193,9 +2199,15 @@ static PyObject* pybullet_generateClothPatchDiagonalLinks(PyObject* self, PyObje
 	// Convert numNdoes from python to c
 	{
 		PyObject* numNodesSeq = PySequence_Fast(numNodesObj, "Expected a sequence");
-		if (!numNodesSeq || (PySequence_Fast_GET_SIZE(numNodesSeq) != 2))
+		if (!numNodesSeq)
+		{
+			PyErr_SetString(SpamError, "Could not convert numNodes to a sequence");
+			return NULL;
+		}
+		if (PySequence_Fast_GET_SIZE(numNodesSeq) != 2)
 		{
 			PyErr_SetString(SpamError, "numNodes must be of length 2");
+			Py_DECREF(numNodesSeq);
 			return NULL;
 		}
 		numNodesX = pybullet_internalGetIntFromSequence(numNodesSeq, 0);
@@ -2233,7 +2245,7 @@ static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyOb
 	(void)self;
 	int physicsClientId = 0;
 
-    int bodyUniqueId = -1;
+	int bodyUniqueId = -1;
 	PyObject* colorObj = 0;
 	double damping = -1;
 	double dynamicFriction = -1;
@@ -2248,7 +2260,7 @@ static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyOb
 	int csolveIter = -1;
 
 	static char* kwlist[] = {
-        "bodyUniqueId",
+		"bodyUniqueId",
 		"color",
 		"damping",
 		"dynamicFriction",
@@ -2283,7 +2295,7 @@ static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyOb
 		return NULL;
 	}
 
-    b3PhysicsClientHandle sm = getPhysicsClient(physicsClientId);
+	b3PhysicsClientHandle sm = getPhysicsClient(physicsClientId);
 	if (sm == 0)
 	{
 		PyErr_SetString(SpamError, "Not connected to physics server.");

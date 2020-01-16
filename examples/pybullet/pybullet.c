@@ -2168,6 +2168,66 @@ static PyObject* pybullet_createClothPatchObjFile(PyObject* self, PyObject* args
 	return Py_None;
 }
 
+static PyObject* pybullet_generateClothPatchDiagonalLinks(PyObject* self, PyObject* args, PyObject* keywds)
+{
+	(void)self;
+	int physicsClientId = 0;
+	int bodyUniqueId = -1;
+	PyObject* numNodesObj = 0;
+
+	static char* kwlist[] = {
+		"bodyUniqueId",
+		"physicsClientId",
+		NULL};
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "iO|i:generateClothPatchDiagonalLinks", kwlist,
+	                                 &bodyUniqueId,
+	                                 &numNodesObj,
+	                                 &physicsClientId))
+	{
+		PyErr_SetString(SpamError, "Unable to parse argument list.");
+		return NULL;
+	}
+
+	int numNodesX = -1;
+	int numNodesY = -1;
+	// Convert numNdoes from python to c
+	{
+		PyObject* numNodesSeq = PySequence_Fast(numNodesObj, "Expected a sequence");
+		if (!numNodesSeq || (PySequence_Fast_GET_SIZE(numNodesSeq) != 2))
+		{
+			PyErr_SetString(SpamError, "numNodes must be of length 2");
+			return NULL;
+		}
+		numNodesX = pybullet_internalGetIntFromSequence(numNodesSeq, 0);
+		numNodesY = pybullet_internalGetIntFromSequence(numNodesSeq, 1);
+		Py_DECREF(numNodesSeq);
+		if (numNodesX <= 0 || numNodesY <= 0)
+		{
+			PyErr_SetString(SpamError, "Each element of numNodes must be > 0");
+			return NULL;
+		}
+	}
+
+	b3PhysicsClientHandle sm = getPhysicsClient(physicsClientId);
+	if (sm == 0)
+	{
+		PyErr_SetString(SpamError, "Not connected to physics server.");
+		return NULL;
+	}
+
+	b3SharedMemoryCommandHandle command = b3GenerateClothPatchDiagonalLinks(sm, bodyUniqueId, numNodesX, numNodesY);
+	b3SharedMemoryStatusHandle statusHandle = b3SubmitClientCommandAndWaitStatus(sm, command);
+	int statusType = b3GetStatusType(statusHandle);
+	if (statusType != CMD_CUSTOM_COMMAND_COMPLETED)
+	{
+		PyErr_SetString(SpamError, "Failed to generate cloth patch diagonal links.");
+		return NULL;
+	}
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
 static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyObject* keywds)
 {
 	(void)self;
@@ -2175,7 +2235,6 @@ static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyOb
 
     int bodyUniqueId = -1;
 	PyObject* colorObj = 0;
-	double mass = -1;
 	double damping = -1;
 	double dynamicFriction = -1;
 	double collisionMargin = -1;
@@ -2191,7 +2250,6 @@ static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyOb
 	static char* kwlist[] = {
         "bodyUniqueId",
 		"color",
-		"mass",
 		"damping",
 		"dynamicFriction",
 		"collisionMargin",
@@ -2205,10 +2263,9 @@ static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyOb
 		"csolveIter",
 		"physicsClientId",
 		NULL};
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "i|Oddddddiiiiiii:createClothPatchObjFile", kwlist,
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "i|Odddddiiiiiii:setSoftBodyParams", kwlist,
 	                                 &bodyUniqueId,
 	                                 &colorObj,
-	                                 &mass,
 	                                 &damping,
 	                                 &dynamicFriction,
 	                                 &collisionMargin,
@@ -2245,10 +2302,6 @@ static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyOb
 			return NULL;
 		}
 		b3UpdateSoftBodyParamsSetColor(command, color);
-	}
-	if (mass > 0)
-	{
-		b3UpdateSoftBodyParamsSetMass(command, mass);
 	}
 	if (damping > 0)
 	{
@@ -12085,6 +12138,9 @@ static PyMethodDef SpamMethods[] = {
 
 	{"createClothPatchObjFile", (PyCFunction)pybullet_createClothPatchObjFile, METH_VARARGS | METH_KEYWORDS,
 	 "Create an object file representing a patch mesh to later be loaded by loadSoftBody."},
+
+	{"generateClothPatchDiagonalLinks", (PyCFunction)pybullet_generateClothPatchDiagonalLinks, METH_VARARGS | METH_KEYWORDS,
+	 "Generate the off-diagonal links for an object created with createClothPatchObjFile."},
 
 	{"setSoftBodyParams", (PyCFunction)pybullet_setSoftBodyParams, METH_VARARGS | METH_KEYWORDS,
 	 "Update the parameters of a soft body."},

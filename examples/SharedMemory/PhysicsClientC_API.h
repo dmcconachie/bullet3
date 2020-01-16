@@ -646,11 +646,11 @@ extern "C"
 	B3_SHARED_API int b3LoadSoftBodyUseBendingSprings(b3SharedMemoryCommandHandle commandHandle, int useBendingSprings, double bendingStiffness);
 
 	B3_SHARED_API b3SharedMemoryCommandHandle b3CreateClothPatchObjFileCommandInit(b3PhysicsClientHandle physClient, const char* fileName, double corner00[3], double corner10[3], double corner01[3], double corner11[3], int numNodesX, int numNodesY);
+	B3_SHARED_API b3SharedMemoryCommandHandle b3GenerateClothPatchDiagonalLinks(b3PhysicsClientHandle physClient, int bodyUniqueId, int numNodesX, int numNodesY);
 
 	B3_SHARED_API b3SharedMemoryCommandHandle b3UpdateSoftBodyParamsCommandInit(b3PhysicsClientHandle physClient, const int bodyUniqueId);
 	B3_SHARED_API int b3UpdateSoftBodyParamsSetColor(b3SharedMemoryCommandHandle commandHandle, double color[4]);
 	B3_SHARED_API int b3UpdateSoftBodyParamsSetFixedCorners(b3SharedMemoryCommandHandle commandHandle, int fixedCorners);
-	B3_SHARED_API int b3UpdateSoftBodyParamsSetMass(b3SharedMemoryCommandHandle commandHandle, double mass);
 	B3_SHARED_API int b3UpdateSoftBodyParamsSetDamping(b3SharedMemoryCommandHandle commandHandle, double damping);
 	B3_SHARED_API int b3UpdateSoftBodyParamsSetDynamicFriction(b3SharedMemoryCommandHandle commandHandle, double dynamicFriction);
 	B3_SHARED_API int b3UpdateSoftBodyParamsSetCollisionMargin(b3SharedMemoryCommandHandle commandHandle, double collisionMargin);

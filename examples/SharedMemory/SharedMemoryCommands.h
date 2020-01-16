@@ -551,7 +551,6 @@ enum EnumCreateClothPatchObjFileFlags
 	CREATE_CLOTH_PATCH_OBJ_FILE_NUM_NODES = 1<<3,
 };
 
-// TODO: verify that using the union this way doesn't break anything
 struct CreateClothPatchObjFileArgs
 {
 	char m_fileName[MAX_FILENAME_LENGTH];
@@ -563,28 +562,33 @@ struct CreateClothPatchObjFileArgs
 	int m_numNodesY;
 };
 
+struct GenerateClothPatchDiagonalLinksArgs
+{
+	int m_bodyUniqueId;
+	int m_numNodesX;
+	int m_numNodesY;
+};
+
 enum EnumUpdateSoftBodyParamsFlags
 {
 	UPDATE_SOFT_BODY_PARAM_COLOR = 1,
-	UPDATE_SOFT_BODY_PARAM_MASS= 1<<1,
-	UPDATE_SOFT_BODY_PARAM_DAMPING = 1<<2,
-	UPDATE_SOFT_BODY_PARAM_DYNAMIC_FRICTION = 1<<3,
-	UPDATE_SOFT_BODY_PARAM_COLLISION_MARGIN = 1<<4,
-	UPDATE_SOFT_BODY_PARAM_LINEAR_STIFFNESS = 1<<5,
-	UPDATE_SOFT_BODY_PARAM_ANGULAR_STIFFNESS = 1<<6,
-	UPDATE_SOFT_BODY_PARAM_GENERATE_BENDING_CONSTRAINTS = 1<<7,
-	UPDATE_SOFT_BODY_PARAM_BENDING_CONSTRAINTS_DISTANCE = 1<<8,
-	UPDATE_SOFT_BODY_PARAM_VSOLVE_ITER = 1<<9,
-	UPDATE_SOFT_BODY_PARAM_PSOLVE_ITER = 1<<10,
-	UPDATE_SOFT_BODY_PARAM_DSOLVE_ITER = 1<<11,
-	UPDATE_SOFT_BODY_PARAM_CSOLVE_ITER = 1<<12,
+	UPDATE_SOFT_BODY_PARAM_DAMPING = 1<<1,
+	UPDATE_SOFT_BODY_PARAM_DYNAMIC_FRICTION = 1<<2,
+	UPDATE_SOFT_BODY_PARAM_COLLISION_MARGIN = 1<<3,
+	UPDATE_SOFT_BODY_PARAM_LINEAR_STIFFNESS = 1<<4,
+	UPDATE_SOFT_BODY_PARAM_ANGULAR_STIFFNESS = 1<<5,
+	UPDATE_SOFT_BODY_PARAM_GENERATE_BENDING_CONSTRAINTS = 1<<6,
+	UPDATE_SOFT_BODY_PARAM_BENDING_CONSTRAINTS_DISTANCE = 1<<7,
+	UPDATE_SOFT_BODY_PARAM_VSOLVE_ITER = 1<<8,
+	UPDATE_SOFT_BODY_PARAM_PSOLVE_ITER = 1<<9,
+	UPDATE_SOFT_BODY_PARAM_DSOLVE_ITER = 1<<10,
+	UPDATE_SOFT_BODY_PARAM_CSOLVE_ITER = 1<<11,
 };
 
 struct UpdateSoftBodyParamsArgs
 {
 	int m_bodyUniqueId;
 	double m_color[4];
-	double m_mass;
 	double m_damping;
 	double m_dynamicFriction;
 	double m_collisionMargin;
@@ -1205,6 +1209,7 @@ struct SharedMemoryCommand
 		struct RequestRaycastIntersections m_requestRaycastIntersections;
 		struct LoadSoftBodyArgs m_loadSoftBodyArguments;
 		struct CreateClothPatchObjFileArgs m_createClothPatchObjFileArguments;
+		struct GenerateClothPatchDiagonalLinksArgs m_generateClothPatchDiagonalLinksArguments;
 		struct UpdateSoftBodyParamsArgs m_updateSoftBodyParamsArguments;
 		struct VRCameraState m_vrCameraStateArguments;
 		struct StateLoggingRequest m_stateLoggingArguments;

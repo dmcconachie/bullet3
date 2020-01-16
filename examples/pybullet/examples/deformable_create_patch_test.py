@@ -31,8 +31,8 @@ def setupWorld():
     #                          useSelfCollision=0,
     #                          frictionCoeff=.5,
     #                          useFaceContact=1)
-    numX = 10
-    numY = 10
+    numX = 20
+    numY = 20
     p.createClothPatchObjFile("/tmp/cloth_patch.obj", [(0.5, 0.5, 0), (-0.5, 0.5, 0), (0.5, -0.5, 0), (-0.5, -0.5, 0)], [numX, numY])
     clothId = p.loadSoftBody("/tmp/cloth_patch.obj",
                              basePosition=[0,0,2],
@@ -46,6 +46,7 @@ def setupWorld():
                              useSelfCollision=0,
                              frictionCoeff=.5,
                              useFaceContact=1)
+    p.generateClothPatchDiagonalLinks(clothId, [numX, numY])
 
     p.createSoftBodyAnchor(clothId, 0, boxId,-1, [0.5,-0.5,0])
     p.createSoftBodyAnchor(clothId, numX-1, boxId,-1, [-0.5,-0.5,0])
@@ -56,7 +57,8 @@ def setupWorld():
                         linearStiffness=0.1,
                         angularStiffness=0.1,
                         generateBendingConstraints=1,
-                        bendingConstraintsDistance=2)
+                        bendingConstraintsDistance=2
+                        )
 
 
 if __name__ == "__main__":

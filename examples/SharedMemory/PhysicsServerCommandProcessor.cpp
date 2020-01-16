@@ -8546,8 +8546,61 @@ bool PhysicsServerCommandProcessor::processCreateClothPatchObjFileCommand(const 
 
 	serverStatusOut.m_numDataStreamBytes = 0;
 	serverStatusOut.m_type = CMD_CREATE_CLOTH_PATCH_OBJ_FILE_COMPLETED;
+	return hasStatus;
+}
 
+bool PhysicsServerCommandProcessor::processGenerateClothPatchDiagonalLinksCommand(const struct SharedMemoryCommand& clientCmd, struct SharedMemoryStatus& serverStatusOut, char* bufferServerToClient, int bufferSizeInBytes)
+{
+	(void)bufferServerToClient;
+	(void)bufferSizeInBytes;
+	serverStatusOut.m_type = CMD_CUSTOM_COMMAND_FAILED;
+	bool hasStatus = true;
 
+	// Retrieve the specified soft body
+	const GenerateClothPatchDiagonalLinksArgs& args = clientCmd.m_generateClothPatchDiagonalLinksArguments;
+	InternalBodyData* body = m_data->m_bodyHandles.getHandle(args.m_bodyUniqueId);
+	if (!body || !body->m_softBody)
+	{
+		serverStatusOut.m_type = CMD_CUSTOM_COMMAND_FAILED;
+		hasStatus = true;
+		return hasStatus;
+	}
+	btSoftBody* psb = body->m_softBody;
+
+	const int nodesX = args.m_numNodesX;
+	const int nodesY = args.m_numNodesY;
+	// TODO: make clean error reporting
+	b3Assert(nodesX > 1);
+	b3Assert(nodesY > 1);
+	b3Assert(psb->m_nodes.size() == nodesX * nodesY);
+
+	// Maps (x, y) vertex index into the flattened vertices array
+#define VIDX(_x_, _y_) ((_y_)*nodesX + (_x_))
+	// Patterned off of btSoftBodyHelpers::CreatePatch(..., gendiags=true, ...)
+	for (int iy = 0; iy < nodesY; ++iy)
+	{
+		for (int ix = 0; ix < nodesX; ++ix)
+		{
+			// Check if we are on one of the "distant" edges
+			const bool mdx = (ix + 1) < nodesX;
+			const bool mdy = (iy + 1) < nodesY;
+			if (mdx && mdy)
+			{
+				if ((ix + iy) & 1)
+				{
+					psb->appendLink(VIDX(ix, iy), VIDX(ix + 1, iy + 1));
+				}
+				else
+				{
+					psb->appendLink(VIDX(ix + 1, iy), VIDX(ix, iy + 1));
+				}
+			}
+		}
+	}
+#undef VIDX
+
+	serverStatusOut.m_numDataStreamBytes = 0;
+	serverStatusOut.m_type = CMD_CUSTOM_COMMAND_COMPLETED;
 	return hasStatus;
 }
 
@@ -8574,10 +8627,6 @@ bool PhysicsServerCommandProcessor::processUpdateSoftBodyParamsCommand(const str
 	{
 		// TODO;
 		b3Assert(false && "Not implemented");
-	}
-	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_MASS) != 0)
-	{
-		psb->setTotalMass(args.m_mass, true);
 	}
 	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_DAMPING) != 0)
 	{
@@ -13089,6 +13138,11 @@ bool PhysicsServerCommandProcessor::processCommand(const struct SharedMemoryComm
 		case CMD_CREATE_CLOTH_PATCH_OBJ_FILE:
 		{
 			hasStatus = processCreateClothPatchObjFileCommand(clientCmd, serverStatusOut, bufferServerToClient, bufferSizeInBytes);
+			break;
+		}
+		case CMD_GENERATE_CLOTH_PATCH_DIAGONAL_LINKS:
+		{
+			hasStatus = processGenerateClothPatchDiagonalLinksCommand(clientCmd, serverStatusOut, bufferServerToClient, bufferSizeInBytes);
 			break;
 		}
 		case CMD_UPDATE_SOFT_BODY_PARAMETERS:

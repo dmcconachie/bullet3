@@ -476,6 +476,26 @@ B3_SHARED_API b3SharedMemoryCommandHandle b3CreateClothPatchObjFileCommandInit(b
 	return (b3SharedMemoryCommandHandle)command;
 }
 
+B3_SHARED_API b3SharedMemoryCommandHandle b3GenerateClothPatchDiagonalLinks(b3PhysicsClientHandle physClient, int bodyUniqueId, int numNodesX, int numNodesY)
+{
+	PhysicsClient* cl = (PhysicsClient*)physClient;
+	b3Assert(cl);
+	b3Assert(cl->canSubmitCommand());
+	if (!cl->canSubmitCommand())
+	{
+		return 0;
+	}
+
+	struct SharedMemoryCommand* command = cl->getAvailableSharedMemoryCommand();
+	b3Assert(command);
+	command->m_type = CMD_GENERATE_CLOTH_PATCH_DIAGONAL_LINKS;
+	GenerateClothPatchDiagonalLinksArgs& args = command->m_generateClothPatchDiagonalLinksArguments;
+	args.m_bodyUniqueId = bodyUniqueId;
+	args.m_numNodesX = numNodesX;
+	args.m_numNodesY = numNodesY;
+	return (b3SharedMemoryCommandHandle)command;
+}
+
 B3_SHARED_API b3SharedMemoryCommandHandle b3UpdateSoftBodyParamsCommandInit(b3PhysicsClientHandle physClient, const int bodyUniqueId)
 {
 	PhysicsClient* cl = (PhysicsClient*)physClient;
@@ -500,15 +520,6 @@ B3_SHARED_API int b3UpdateSoftBodyParamsSetColor(b3SharedMemoryCommandHandle com
 	b3Assert(command->m_type == CMD_UPDATE_SOFT_BODY_PARAMETERS);
 	memcpy(command->m_updateSoftBodyParamsArguments.m_color, color, sizeof(command->m_updateSoftBodyParamsArguments.m_color));
 	command->m_updateFlags |= UPDATE_SOFT_BODY_PARAM_COLOR;
-	return 0;
-}
-
-B3_SHARED_API int b3UpdateSoftBodyParamsSetMass(b3SharedMemoryCommandHandle commandHandle, double mass)
-{
-	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
-	b3Assert(command->m_type == CMD_UPDATE_SOFT_BODY_PARAMETERS);
-	command->m_updateSoftBodyParamsArguments.m_mass = mass;
-	command->m_updateFlags |= UPDATE_SOFT_BODY_PARAM_MASS;
 	return 0;
 }
 

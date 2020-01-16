@@ -12151,6 +12151,7 @@ static PyMethodDef SpamMethods[] = {
 
 	{"loadSDF", (PyCFunction)pybullet_loadSDF, METH_VARARGS | METH_KEYWORDS,
 	 "Load multibodies from an SDF file."},
+
 #ifndef SKIP_SOFT_BODY_MULTI_BODY_DYNAMICS_WORLD
 	{"loadSoftBody", (PyCFunction)pybullet_loadSoftBody, METH_VARARGS | METH_KEYWORDS,
 	 "Load a softbody from an obj file."},
@@ -12166,8 +12167,8 @@ static PyMethodDef SpamMethods[] = {
 
 	{"createSoftBodyAnchor", (PyCFunction)pybullet_createSoftBodyAnchor, METH_VARARGS | METH_KEYWORDS,
 	 "Create an anchor (attachment) between a soft body and a rigid or multi body."},
-
 #endif
+
 	{"loadBullet", (PyCFunction)pybullet_loadBullet, METH_VARARGS | METH_KEYWORDS,
 	 "Load a world from a .bullet file."},
 
@@ -12180,8 +12181,8 @@ static PyMethodDef SpamMethods[] = {
 	{"saveState", (PyCFunction)pybullet_saveState, METH_VARARGS | METH_KEYWORDS,
 	 "Save the full state of the world to memory."},
 
-	 { "removeState", (PyCFunction)pybullet_removeState, METH_VARARGS | METH_KEYWORDS,
-	"Remove a state created using saveState by its state unique id." },
+	{"removeState", (PyCFunction)pybullet_removeState, METH_VARARGS | METH_KEYWORDS,
+	 "Remove a state created using saveState by its state unique id."},
 
 	{"loadMJCF", (PyCFunction)pybullet_loadMJCF, METH_VARARGS | METH_KEYWORDS,
 	 "Load multibodies from an MJCF file."},
@@ -12195,7 +12196,7 @@ static PyMethodDef SpamMethods[] = {
 	{"removeCollisionShape", (PyCFunction)pybullet_removeCollisionShape, METH_VARARGS | METH_KEYWORDS,
 	 "Remove a collision shape. Only useful when the collision shape is not used in a body (to perform a getClosestPoint query)."},
 
-	 {"getMeshData", (PyCFunction)pybullet_getMeshData, METH_VARARGS | METH_KEYWORDS,
+	{"getMeshData", (PyCFunction)pybullet_getMeshData, METH_VARARGS | METH_KEYWORDS,
 	 "Get mesh data. Returns vertices etc from the mesh."},
 
 	{"createVisualShape", (PyCFunction)pybullet_createVisualShape, METH_VARARGS | METH_KEYWORDS,
@@ -12280,13 +12281,11 @@ static PyMethodDef SpamMethods[] = {
 	{"getConstraintUniqueId", (PyCFunction)pybullet_getConstraintUniqueId, METH_VARARGS | METH_KEYWORDS,
 	 "Get the unique id of the constraint, given a integer index in range [0.. number of constraints)."},
 
-	{"getBasePositionAndOrientation", (PyCFunction)pybullet_getBasePositionAndOrientation,
-	 METH_VARARGS | METH_KEYWORDS,
+	{"getBasePositionAndOrientation", (PyCFunction)pybullet_getBasePositionAndOrientation, METH_VARARGS | METH_KEYWORDS,
 	 "Get the world position and orientation of the base of the object. "
 	 "(x,y,z) position vector and (x,y,z,w) quaternion orientation."},
 
-	{"getAABB", (PyCFunction)pybullet_getAABB,
-	 METH_VARARGS | METH_KEYWORDS,
+	{"getAABB", (PyCFunction)pybullet_getAABB, METH_VARARGS | METH_KEYWORDS,
 	 "Get the axis aligned bound box min and max coordinates in world space."},
 
 	{"resetBasePositionAndOrientation",
@@ -12295,8 +12294,7 @@ static PyMethodDef SpamMethods[] = {
 	 "instantaneously, not through physics simulation. (x,y,z) position vector "
 	 "and (x,y,z,w) quaternion orientation."},
 
-	{"getBaseVelocity", (PyCFunction)pybullet_getBaseVelocity,
-	 METH_VARARGS | METH_KEYWORDS,
+	{"getBaseVelocity", (PyCFunction)pybullet_getBaseVelocity, METH_VARARGS | METH_KEYWORDS,
 	 "Get the linear and angular velocity of the base of the object "
 	 " in world space coordinates. "
 	 "(x,y,z) linear velocity vector and (x,y,z) angular velocity vector."},
@@ -12324,7 +12322,6 @@ static PyMethodDef SpamMethods[] = {
 	{ "getJointStatesMultiDof", (PyCFunction)pybullet_getJointStatesMultiDof, METH_VARARGS | METH_KEYWORDS,
 		 "Get the states (position, velocity etc) for multiple joint on a body. (supports planar and spherical joints)" },
 
-
 	{"getLinkState", (PyCFunction)pybullet_getLinkState, METH_VARARGS | METH_KEYWORDS,
 	 "position_linkcom_world, world_rotation_linkcom,\n"
 	 "position_linkcom_frame, frame_rotation_linkcom,\n"
@@ -12336,8 +12333,8 @@ static PyMethodDef SpamMethods[] = {
 	 " center of mass (COM) of the link, relative to the world reference"
 	 " frame."},
 
-	 { "getLinkStates", (PyCFunction)pybullet_getLinkStates, METH_VARARGS | METH_KEYWORDS,
-	"same as getLinkState except it takes a list of linkIndices" },
+	{"getLinkStates", (PyCFunction)pybullet_getLinkStates, METH_VARARGS | METH_KEYWORDS,
+	 "same as getLinkState except it takes a list of linkIndices" },
 
 	{"resetJointState", (PyCFunction)pybullet_resetJointState, METH_VARARGS | METH_KEYWORDS,
 	 "resetJointState(objectUniqueId, jointIndex, targetValue, targetVelocity=0, physicsClientId=0)\n"
@@ -12348,10 +12345,11 @@ static PyMethodDef SpamMethods[] = {
 	 "resetJointStateMultiDof(objectUniqueId, jointIndex, targetValue, targetVelocity=0, physicsClientId=0)\n"
 	 "Reset the state (position, velocity etc) for a joint on a body "
 	 "instantaneously, not through physics simulation."},
-	 { "resetJointStatesMultiDof", (PyCFunction)pybullet_resetJointStatesMultiDof, METH_VARARGS | METH_KEYWORDS,
-		"resetJointStatesMultiDof(objectUniqueId, jointIndices, targetValues, targetVelocities=0, physicsClientId=0)\n"
-		"Reset the states (position, velocity etc) for multiple joints on a body "
-		"instantaneously, not through physics simulation." },
+
+	{"resetJointStatesMultiDof", (PyCFunction)pybullet_resetJointStatesMultiDof, METH_VARARGS | METH_KEYWORDS,
+	 "resetJointStatesMultiDof(objectUniqueId, jointIndices, targetValues, targetVelocities=0, physicsClientId=0)\n"
+	 "Reset the states (position, velocity etc) for multiple joints on a body "
+	 "instantaneously, not through physics simulation." },
 
 	{"changeDynamics", (PyCFunction)pybullet_changeDynamicsInfo, METH_VARARGS | METH_KEYWORDS,
 	 "change dynamics information such as mass, lateral friction coefficient."},
@@ -12373,13 +12371,10 @@ static PyMethodDef SpamMethods[] = {
 	 "no immediate state change, stepSimulation will process the motors."
 	 "This method sets multi-degree-of-freedom motor such as the spherical joint motor."},
 
-	 { "setJointMotorControlMultiDofArray", (PyCFunction)pybullet_setJointMotorControlMultiDofArray, METH_VARARGS | METH_KEYWORDS,
-		 "Set control mode and desired target values for multiple motors. There is "
-		 "no immediate state change, stepSimulation will process the motors."
-		 "This method sets multi-degree-of-freedom motor such as the spherical joint motor." },
-
-
-
+	{"setJointMotorControlMultiDofArray", (PyCFunction)pybullet_setJointMotorControlMultiDofArray, METH_VARARGS | METH_KEYWORDS,
+	 "Set control mode and desired target values for multiple motors. There is "
+	 "no immediate state change, stepSimulation will process the motors."
+	 "This method sets multi-degree-of-freedom motor such as the spherical joint motor." },
 
 	{"setJointMotorControlArray", (PyCFunction)pybullet_setJointMotorControlArray, METH_VARARGS | METH_KEYWORDS,
 	 "Set an array of motors control mode and desired target value. There is "
@@ -12457,6 +12452,7 @@ static PyMethodDef SpamMethods[] = {
 
 	{"addUserDebugParameter", (PyCFunction)pybullet_addUserDebugParameter, METH_VARARGS | METH_KEYWORDS,
 	 "Add a user debug parameter, such as a slider, that can be controlled using a GUI."},
+
 	{"readUserDebugParameter", (PyCFunction)pybullet_readUserDebugParameter, METH_VARARGS | METH_KEYWORDS,
 	 "Read the current value of a user debug parameter, given the user debug item unique id."},
 
@@ -12563,26 +12559,25 @@ static PyMethodDef SpamMethods[] = {
 	 "Returns:\n"
 	 "  massMatrix - a list of lists of the mass matrix components.\n"},
 
-
-	{"calculateInverseKinematics", (PyCFunction)pybullet_calculateInverseKinematics,
-	 METH_VARARGS | METH_KEYWORDS,
+	{"calculateInverseKinematics", (PyCFunction)pybullet_calculateInverseKinematics, METH_VARARGS | METH_KEYWORDS,
 	 "Inverse Kinematics bindings: Given an object id, "
 	 "current joint positions and target position"
 	 " for the end effector,"
 	 "compute the inverse kinematics and return the new joint state"},
-	 { "calculateInverseKinematics2", (PyCFunction)pybullet_calculateInverseKinematics2,
-		METH_VARARGS | METH_KEYWORDS,
-		"Inverse Kinematics bindings: Given an object id, "
-		"current joint positions and target positions"
-		" for the end effectors,"
-		"compute the inverse kinematics and return the new joint state"
-	 },
+
+	{"calculateInverseKinematics2", (PyCFunction)pybullet_calculateInverseKinematics2, METH_VARARGS | METH_KEYWORDS,
+	 "Inverse Kinematics bindings: Given an object id, "
+	 "current joint positions and target positions"
+	 " for the end effectors,"
+	 "compute the inverse kinematics and return the new joint state"},
 
 	{"getVREvents", (PyCFunction)pybullet_getVREvents, METH_VARARGS | METH_KEYWORDS,
 	 "Get Virtual Reality events, for example to track VR controllers position/buttons"},
+
 	{"setVRCameraState", (PyCFunction)pybullet_setVRCameraState, METH_VARARGS | METH_KEYWORDS,
 	 "Set properties of the VR Camera such as its root transform "
 	 "for teleporting or to track objects (camera inside a vehicle for example)."},
+
 	{"getKeyboardEvents", (PyCFunction)pybullet_getKeyboardEvents, METH_VARARGS | METH_KEYWORDS,
 	 "Get keyboard events, keycode and state (KEY_IS_DOWN, KEY_WAS_TRIGGERED, KEY_WAS_RELEASED)"},
 
@@ -12593,8 +12588,10 @@ static PyMethodDef SpamMethods[] = {
 	 "Start logging of state, such as robot base position, orientation, joint positions etc. "
 	 "Specify loggingType (STATE_LOGGING_MINITAUR, STATE_LOGGING_GENERIC_ROBOT, STATE_LOGGING_VR_CONTROLLERS, STATE_LOGGING_CONTACT_POINTS, etc), "
 	 "fileName, optional objectUniqueId, maxLogDof, bodyUniqueIdA, bodyUniqueIdB, linkIndexA, linkIndexB. Function returns int loggingUniqueId"},
+
 	{"stopStateLogging", (PyCFunction)pybullet_stopStateLogging, METH_VARARGS | METH_KEYWORDS,
 	 "Stop logging of robot state, given a loggingUniqueId."},
+
 	{"rayTest", (PyCFunction)pybullet_rayTestObsolete, METH_VARARGS | METH_KEYWORDS,
 	 "Cast a ray and return the first object hit, if any. "
 	 "Takes two arguments (from_position [x,y,z] and to_position [x,y,z] in Cartesian world coordinates"},
@@ -12621,12 +12618,10 @@ static PyMethodDef SpamMethods[] = {
 	{"setTimeOut", (PyCFunction)pybullet_setTimeOut, METH_VARARGS | METH_KEYWORDS,
 	 "Set the timeOut in seconds, used for most of the API calls."},
 
-	{"setAdditionalSearchPath", (PyCFunction)pybullet_setAdditionalSearchPath,
-	 METH_VARARGS | METH_KEYWORDS,
+	{"setAdditionalSearchPath", (PyCFunction)pybullet_setAdditionalSearchPath, METH_VARARGS | METH_KEYWORDS,
 	 "Set an additional search path, used to load URDF/SDF files."},
 
-	{"getAPIVersion", (PyCFunction)pybullet_getAPIVersion,
-	 METH_VARARGS | METH_KEYWORDS,
+	{"getAPIVersion", (PyCFunction)pybullet_getAPIVersion, METH_VARARGS | METH_KEYWORDS,
 	 "Get version of the API. Compatibility exists for connections using the same API version. Make sure both client and server use the same number of bits (32-bit or 64bit)."},
 
 	// todo(erwincoumans)
@@ -12712,8 +12707,7 @@ initpybullet(void)
 	if (m == NULL) return;
 #endif
 
-	PyModule_AddIntConstant(m, "SHARED_MEMORY",
-							eCONNECT_SHARED_MEMORY);                                    // user read
+	PyModule_AddIntConstant(m, "SHARED_MEMORY", eCONNECT_SHARED_MEMORY);                // user read
 	PyModule_AddIntConstant(m, "DIRECT", eCONNECT_DIRECT);                              // user read
 	PyModule_AddIntConstant(m, "GUI", eCONNECT_GUI);                                    // user read
 	PyModule_AddIntConstant(m, "UDP", eCONNECT_UDP);                                    // user read
@@ -12721,7 +12715,7 @@ initpybullet(void)
 	PyModule_AddIntConstant(m, "GUI_SERVER", eCONNECT_GUI_SERVER);                      // user read
 	PyModule_AddIntConstant(m, "GUI_MAIN_THREAD", eCONNECT_GUI_MAIN_THREAD);            // user read
 	PyModule_AddIntConstant(m, "SHARED_MEMORY_SERVER", eCONNECT_SHARED_MEMORY_SERVER);  // user read
-	PyModule_AddIntConstant(m, "SHARED_MEMORY_GUI", eCONNECT_SHARED_MEMORY_GUI);  // user read
+	PyModule_AddIntConstant(m, "SHARED_MEMORY_GUI", eCONNECT_SHARED_MEMORY_GUI);        // user read
 
 
 #ifdef BT_ENABLE_DART

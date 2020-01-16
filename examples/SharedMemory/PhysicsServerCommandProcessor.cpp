@@ -11069,18 +11069,16 @@ bool PhysicsServerCommandProcessor::processCreateUserConstraintCommand(const str
 								sbodyHandle->m_softBody->appendDeformableAnchor(nodeIndex, mbodyHandle->m_rigidBody);
 							}
 
-#if 1
 							btSoftMultiBodyDynamicsWorld* softWorld = getSoftWorld();
 							if (softWorld)
 							{
 								bool disableCollisionBetweenLinkedBodies = true;
 								btVector3 localPivot(clientCmd.m_userConstraintArguments.m_childFrame[0],
-									clientCmd.m_userConstraintArguments.m_childFrame[1],
-									clientCmd.m_userConstraintArguments.m_childFrame[2]);
+								                     clientCmd.m_userConstraintArguments.m_childFrame[1],
+								                     clientCmd.m_userConstraintArguments.m_childFrame[2]);
 
 								sbodyHandle->m_softBody->appendAnchor(nodeIndex, mbodyHandle->m_rigidBody, localPivot, disableCollisionBetweenLinkedBodies);
 							}
-#endif
 						}
 						int uid = m_data->m_userConstraintUIDGenerator++;
 						serverCmd.m_userConstraintResultArgs.m_userConstraintUniqueId = uid;

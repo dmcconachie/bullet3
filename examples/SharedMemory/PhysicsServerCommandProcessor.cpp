@@ -8122,19 +8122,19 @@ bool PhysicsServerCommandProcessor::processLoadSoftBodyCommand(const struct Shar
 				if (numTris > 0)
 				{
 					{
-					btSoftMultiBodyDynamicsWorld* softWorld = getSoftWorld();
-					if (softWorld)
-					{
-						psb = btSoftBodyHelpers::CreateFromTriMesh(softWorld->getWorldInfo(), &vertices[0], &indices[0], numTris);
+						btSoftMultiBodyDynamicsWorld* softWorld = getSoftWorld();
+						if (softWorld)
+						{
+							psb = btSoftBodyHelpers::CreateFromTriMesh(softWorld->getWorldInfo(), &vertices[0], &indices[0], numTris);
+						}
 					}
-				}
-				{
-					btDeformableMultiBodyDynamicsWorld* deformWorld = getDeformableWorld();
-					if (deformWorld)
 					{
-						psb = btSoftBodyHelpers::CreateFromTriMesh(deformWorld->getWorldInfo(), &vertices[0], &indices[0], numTris);
+						btDeformableMultiBodyDynamicsWorld* deformWorld = getDeformableWorld();
+						if (deformWorld)
+						{
+							psb = btSoftBodyHelpers::CreateFromTriMesh(deformWorld->getWorldInfo(), &vertices[0], &indices[0], numTris);
+						}
 					}
-				}
 				}
 			}
 #ifndef SKIP_DEFORMABLE_BODY

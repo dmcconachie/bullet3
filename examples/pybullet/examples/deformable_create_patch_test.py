@@ -36,17 +36,17 @@ def setupWorld():
                              useFaceContact=1)
     p.generateClothPatchDiagonalLinks(clothId, numNodes)
 
+    # Note that the bodyFramePosition value is unused for DEFORMABLE_WORLD
     p.createSoftBodyAnchor(clothId, 0, boxId,-1, [0.5,-0.5,0])
     p.createSoftBodyAnchor(clothId, numNodes[0]-1, boxId,-1, [-0.5,-0.5,0])
     p.createSoftBodyAnchor(clothId, numNodes[0]*(numNodes[1]-1), -1, -1)
     p.createSoftBodyAnchor(clothId, numNodes[0]*numNodes[1]-1, -1, -1)
 
     p.setSoftBodyParams(clothId,
-                        linearStiffness=0.1,
-                        angularStiffness=0.1,
                         # generateBendingConstraints=1,
-                        # bendingConstraintsDistance=2
-                        )
+                        # bendingConstraintsDistance=2,
+                        linearStiffness=0.1,
+                        angularStiffness=0.1)
 
 
 if __name__ == "__main__":

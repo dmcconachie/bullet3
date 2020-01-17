@@ -8674,6 +8674,25 @@ bool PhysicsServerCommandProcessor::processUpdateSoftBodyParamsCommand(const str
 	{
 		psb->m_cfg.citerations = args.m_csolveIter;
 	}
+	if ((clientCmd.m_updateFlags & UPDATE_SOFT_BODY_PARAM_SET_ACTIVATION_STATE) != 0)
+	{
+		if (args.m_activationState & eActivationStateEnableSleeping)
+		{
+			psb->forceActivationState(ACTIVE_TAG);
+		}
+		if (args.m_activationState & eActivationStateDisableSleeping)
+		{
+			psb->forceActivationState(DISABLE_DEACTIVATION);
+		}
+		if (args.m_activationState & eActivationStateWakeUp)
+		{
+			psb->forceActivationState(ACTIVE_TAG);
+		}
+		if (args.m_activationState & eActivationStateSleep)
+		{
+			psb->forceActivationState(ISLAND_SLEEPING);
+		}
+	}
 
 	// Set active collicion flags
 	// TODO: configurable collision flags and cluster generation

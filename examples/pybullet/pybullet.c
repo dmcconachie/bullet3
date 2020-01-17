@@ -2258,6 +2258,7 @@ static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyOb
 	int psolveIter = -1;
 	int dsolveIter = -1;
 	int csolveIter = -1;
+	int activationState = -1;
 
 	static char* kwlist[] = {
 		"bodyUniqueId",
@@ -2273,9 +2274,10 @@ static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyOb
 		"psolveIter",
 		"dsolveIter",
 		"csolveIter",
+		"activationState",
 		"physicsClientId",
 		NULL};
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "i|Odddddiiiiiii:setSoftBodyParams", kwlist,
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "i|Odddddiiiiiiii:setSoftBodyParams", kwlist,
 	                                 &bodyUniqueId,
 	                                 &colorObj,
 	                                 &damping,
@@ -2289,6 +2291,7 @@ static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyOb
 	                                 &psolveIter,
 	                                 &dsolveIter,
 	                                 &csolveIter,
+	                                 &activationState,
 	                                 &physicsClientId))
 	{
 		PyErr_SetString(SpamError, "Unable to parse argument list.");
@@ -2358,6 +2361,10 @@ static PyObject* pybullet_setSoftBodyParams(PyObject* self, PyObject* args, PyOb
 	if (csolveIter > 0)
 	{
 		b3UpdateSoftBodyParamsSetCsolveIter(command, csolveIter);
+	}
+	if (activationState > 0)
+	{
+		b3UpdateSoftBodyParamsSetActivationState(command, activationState);
 	}
 
 	b3SharedMemoryStatusHandle statusHandle = b3SubmitClientCommandAndWaitStatus(sm, command);

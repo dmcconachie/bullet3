@@ -583,6 +583,7 @@ enum EnumUpdateSoftBodyParamsFlags
 	UPDATE_SOFT_BODY_PARAM_PSOLVE_ITER = 1<<9,
 	UPDATE_SOFT_BODY_PARAM_DSOLVE_ITER = 1<<10,
 	UPDATE_SOFT_BODY_PARAM_CSOLVE_ITER = 1<<11,
+	UPDATE_SOFT_BODY_PARAM_SET_ACTIVATION_STATE = 1<<12,
 };
 
 struct UpdateSoftBodyParamsArgs
@@ -600,6 +601,7 @@ struct UpdateSoftBodyParamsArgs
 	int m_psolveIter;
 	int m_dsolveIter;
 	int m_csolveIter;
+	int m_activationState;
 };
 
 struct RequestActualStateArgs

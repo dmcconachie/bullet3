@@ -622,6 +622,15 @@ B3_SHARED_API int b3UpdateSoftBodyParamsSetCsolveIter(b3SharedMemoryCommandHandl
 	return 0;
 }
 
+B3_SHARED_API int b3UpdateSoftBodyParamsSetActivationState(b3SharedMemoryCommandHandle commandHandle, int activationState)
+{
+	struct SharedMemoryCommand* command = (struct SharedMemoryCommand*)commandHandle;
+	b3Assert(command->m_type == CMD_UPDATE_SOFT_BODY_PARAMETERS);
+	command->m_updateSoftBodyParamsArguments.m_activationState = activationState;
+	command->m_updateFlags |= UPDATE_SOFT_BODY_PARAM_SET_ACTIVATION_STATE;
+	return 0;
+}
+
 
 B3_SHARED_API b3SharedMemoryCommandHandle b3LoadUrdfCommandInit(b3PhysicsClientHandle physClient, const char* urdfFileName)
 {

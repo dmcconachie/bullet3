@@ -662,6 +662,7 @@ extern "C"
 	B3_SHARED_API int b3UpdateSoftBodyParamsSetPsolveIter(b3SharedMemoryCommandHandle commandHandle, int psolveIter);
 	B3_SHARED_API int b3UpdateSoftBodyParamsSetDsolveIter(b3SharedMemoryCommandHandle commandHandle, int dsolveIter);
 	B3_SHARED_API int b3UpdateSoftBodyParamsSetCsolveIter(b3SharedMemoryCommandHandle commandHandle, int csolveIter);
+	B3_SHARED_API int b3UpdateSoftBodyParamsSetActivationState(b3SharedMemoryCommandHandle commandHandle, int activationState);
 
 	B3_SHARED_API b3SharedMemoryCommandHandle b3InitCreateSoftBodyAnchorConstraintCommand(b3PhysicsClientHandle physClient, int softBodyUniqueId, int nodeIndex, int bodyUniqueId, int linkIndex, const double bodyFramePosition[3]);
 

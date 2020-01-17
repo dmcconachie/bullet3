@@ -12,6 +12,18 @@ import IPython
 import numpy as np
 
 
+def radiusGrab(clothId : int, gripperId : int, radius : float):
+    _, meshData = p.getMeshData(clothId)
+    nodes = np.array(meshData)
+    gripperPos, _ = np.array(p.getBasePositionAndOrientation(gripperId))
+
+    for node in range(len(nodes)):
+        dist = np.linalg.norm(nodes[node] - gripperPos)
+        if dist < radius:
+            # Note that the bodyFramePosition value is unused for DEFORMABLE_WORLD
+            p.createSoftBodyAnchor(clothId, node, gripperId, -1)
+
+
 def setupWorld():
     p.resetSimulation(p.RESET_USE_DEFORMABLE_WORLD)
     p.setPhysicsEngineParameter(deterministicOverlappingPairs=1,
@@ -38,14 +50,15 @@ def setupWorld():
                              useFaceContact=1)
     p.generateClothPatchDiagonalLinks(clothId, numNodes)
     _, meshData = p.getMeshData(clothId)
+    
 
-    gripper0Id = p.loadURDF("gripper.urdf", meshData[0], [0, 0, 0, 1])
-    gripper1Id = p.loadURDF("gripper.urdf", meshData[numNodes[0]-1], [0, 0, 0, 1])
-    # Note that the bodyFramePosition value is unused for DEFORMABLE_WORLD
-    p.createSoftBodyAnchor(clothId, 0,             gripper0Id, -1)
-    p.createSoftBodyAnchor(clothId, numNodes[0]-1, gripper1Id, -1)
+    gripper0Id = p.loadURDF("gripper.urdf", np.add(meshData[0],               [-0.05, -0.05, 0.0]), [0, 0, 0, 1])
+    gripper1Id = p.loadURDF("gripper.urdf", np.add(meshData[numNodes[0] - 1], [ 0.05, -0.05, 0.0]), [0, 0, 0, 1])
+    radiusGrab(clothId, gripper0Id, 0.1)
+    radiusGrab(clothId, gripper1Id, 0.1)
 
     p.setSoftBodyParams(clothId,
+                        activationState=p.ACTIVATION_STATE_DISABLE_SLEEPING,
                         # generateBendingConstraints=1,
                         # bendingConstraintsDistance=2,
                         linearStiffness=0.1,
@@ -68,9 +81,6 @@ if __name__ == "__main__":
                                  cameraYaw=50,
                                  cameraTargetPosition=np.average(np.array([pos0, pos1]), 0))
 
-    # setRealTimeSimulation is fundamentally broken; don't use it
-    # - the faster the computation happens, the more likely the amount of elapsed 
-    #   in a loop time goes under
     p.setRealTimeSimulation(1)
     while p.isConnected():
         pos0, orn0 = p.getBasePositionAndOrientation(gripperIds[0])
@@ -78,6 +88,6 @@ if __name__ == "__main__":
         p.resetBasePositionAndOrientation(gripperIds[0], np.add(pos0, [0, 0, 0.001]), orn0)
         p.resetBasePositionAndOrientation(gripperIds[1], np.add(pos1, [0, 0, 0.001]), orn1)
         # p.stepSimulation()
-        _, meshData = p.getMeshData(clothId)
-        print(meshData[30], meshData[30+29])
+        # _, meshData = p.getMeshData(clothId)
+        # print(meshData[30], meshData[30+29])
         time.sleep(1./60.)

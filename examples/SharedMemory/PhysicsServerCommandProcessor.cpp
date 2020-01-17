@@ -8317,6 +8317,7 @@ bool PhysicsServerCommandProcessor::processLoadSoftBodyCommand(const struct Shar
 	    psb->scale(btVector3(scale, scale, scale));
 	    psb->rotate(initialOrn);
 	    psb->translate(initialPos);
+	    psb->setActivationState(DISABLE_DEACTIVATION);
 
 	    psb->getCollisionShape()->setMargin(collisionMargin);
 	    psb->getCollisionShape()->setUserPointer(psb);
